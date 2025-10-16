@@ -1,4 +1,4 @@
-# Academic Website (Thomas May)
+# Academic Website
 
 This is a the static site for the Thomay lab (University at Buffalo), designed for maintenance via GitHub Pages and automatic publication listings from ORCID.
 
