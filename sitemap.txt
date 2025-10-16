@@ -1,0 +1,9 @@
+/assets/publications.js
+/assets/publications.json
+/assets/style.css
+/index.html
+/openings.html
+/people.html
+/publications.html
+/scripts/build_publications.py
+/.github/workflows/pubs.yml

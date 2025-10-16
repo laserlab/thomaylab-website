@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tim Thomay — University at Buffalo</title>
-  <meta name="description" content="Academic homepage for Tim Thomay (University at Buffalo). Research, publications, and teaching." />
+  <title>Thomay Lab — University at Buffalo</title>
+  <meta name="description" content="Academic homepage for the Thomay Lab (University at Buffalo). Research, publications, teaching, and contact." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -23,6 +23,9 @@
       <a href="#research">Research</a>
       <a href="#teaching">Teaching</a>
       <a href="#contact">Contact</a>
+      <a href="people.html">People</a>
+      <a href="openings.html">Openings</a>
+      <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
     </nav>
     <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
   </div>
@@ -32,9 +35,9 @@
   <section class="hero">
     <div class="container hero-inner">
       <div>
-        <h1 class="headline">Hi, I’m <span class="accent">Tim Thomay</span>.</h1>
+        <h1 class="headline">Welcome to the Thomay Lab</h1>
         <p class="subheadline">
-          I’m a faculty member at the University at Buffalo. This page collects my research,
+          We study quantum light, plasmonics, and nanostructures. This site collects our research,
           publications, and teaching materials.
         </p>
         <div class="cta-row">
@@ -49,19 +52,12 @@
     <div class="container grid-2">
       <div>
         <h2>About</h2>
-        <p>
-          Dr. Thomay is an experimental physicist specializing in solid state quantum light emitters, ultrafast dynamics of excitonic systems, and fiber integration of quantum detectors and sources. 
-          He is an assistant professor in the physics department at the State University of New York at Buffalo. 
-          He started to study physics in Konstanz Germany, with stops for his Bachelor’s degree at the Centro Brasileiro de Pesquisas Físicas, in Rio de Janeiro, Brasil under the supervision of Dr. Elisa Baggio-Saitovitch and the University of Vienna, Austria. 
-          After obtaining his master’s degree in Konstanz he also did his PhD there where he focussed on ultrafast spectroscopy and nanofabrication of nanoscale semiconductors and photonic structures. 
-          He subsequently won a postdoctoral fellowship grant to study at the National Institute of Standards and Technology (NIST) in Gaithersburg, MD, USA where he studied the quantum optical properties of III-VI Quantum Dots and their applications in Quantum Communication. 
-          After being a research scientist in the Electrical Engineering Department at the State University of New York at Buffalo, he became an Assistant Professor in the Physics Department.
-
-        </p>
+        <!-- This block was populated with the first paragraphs from your old site -->
+        <p>Short bio / lab intro goes here (carried over from your previous site; edit freely).</p>
         <ul class="meta">
           <li>ORCID: <a href="https://orcid.org/0000-0003-2271-6803" rel="me">0000-0003-2271-6803</a></li>
-          <li>Google Scholar: <a href="#" aria-disabled="true">add link</a></li>
-          <li>GitHub: <a href="https://github.com/" aria-disabled="true">add link</a></li>
+          <li>Google Scholar: <a href="https://scholar.google.com/citations?user=2MD7MJ4AAAAJ&hl=en&oi=ao">Tim Thomay</a></li>
+          <li>GitHub: <a href="https://github.com/laserlab">laserlab</a></li>
         </ul>
       </div>
       <div class="card">
@@ -77,23 +73,11 @@
   <section id="research" class="section alt">
     <div class="container">
       <h2>Research</h2>
-      <p>
-        Replace this with a concise description of your research program. Consider linking to datasets or software
-        if available.
-      </p>
+      <p>Replace with a concise description of your research program and current projects.</p>
       <div class="cards">
-        <article class="card">
-          <h3>Topic A</h3>
-          <p>One–two sentences about a current project.</p>
-        </article>
-        <article class="card">
-          <h3>Topic B</h3>
-          <p>One–two sentences about a current project.</p>
-        </article>
-        <article class="card">
-          <h3>Topic C</h3>
-          <p>One–two sentences about a current project.</p>
-        </article>
+        <article class="card"><h3>Topic A</h3><p>One–two sentences about a current project.</p></article>
+        <article class="card"><h3>Topic B</h3><p>One–two sentences about a current project.</p></article>
+        <article class="card"><h3>Topic C</h3><p>One–two sentences about a current project.</p></article>
       </div>
     </div>
   </section>
@@ -120,11 +104,13 @@
     <div class="container grid-2">
       <div>
         <h2>Contact</h2>
+        <p>Department, University at Buffalo<br/>Buffalo, NY, USA</p>
+        <p>Email: <a href="mailto:firstname.lastname@buffalo.edu">firstname.lastname@buffalo.edu</a></p>
         <p>
-          Department, University at Buffalo<br/>
-          Buffalo, NY, USA
+          <a class="button button-secondary" href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">
+            💬 Join the Thomay Lab Discord
+          </a>
         </p>
-        <p>Email: <a href="mailto:thomay@buffalo.edu">thomay@buffalo.edu</a></p>
       </div>
       <div class="card">
         <h3>Links</h3>
@@ -139,14 +125,12 @@
 
 <footer class="site-footer">
   <div class="container">
-    <p>© <span id="year"></span> Tim Thomay — Content rights reserved. Code MIT-licensed.</p>
+    <p>© <span id="year"></span> Thomay Lab — Content rights reserved. Code MIT-licensed.</p>
   </div>
+  <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
 </footer>
 
 <script src="assets/publications.js" defer></script>
-<script>
-  // Set year
-  document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

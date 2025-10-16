@@ -4,11 +4,17 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * 1'  # Mondays 06:00 UTC
+
+permissions:
+  contents: write
+
 jobs:
   build-pubs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -18,8 +24,8 @@ jobs:
           python scripts/build_publications.py
       - name: Commit updated publications.json
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
           git add assets/publications.json
           git commit -m "Update publications.json from ORCID" || echo "No changes"
           git push

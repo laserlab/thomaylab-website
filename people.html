@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>People — Thomay Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html">Thomay Lab</a>
+      <span class="tagline">University at Buffalo</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="index.html#about">About</a>
+      <a href="publications.html">Publications</a>
+      <a href="people.html" aria-current="page">People</a>
+      <a href="index.html#teaching">Teaching</a>
+      <a href="openings.html">Openings</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<main class="section">
+  <div class="container">
+    <h1>People</h1>
+    <p class="muted">Graduate students currently or recently advised in the Thomay Lab.</p>
+
+    <h2>Graduate Students</h2>
+    <div class="cards">
+      <article class="card">
+        <h3>Yasmin Sarhan</h3>
+        <p>PhD candidate, Physics (UB) </p>
+        <ul class="meta"><li><a href="https://www.researchgate.net/profile/Yasmin-Sarhan">ResearchGate</a></li><li><a href="https://www.linkedin.com/in/yasmin-sarhan-27324a118">LinkedIn</a></li></ul>
+      </article>
+
+      <article class="card">
+        <h3>Umadini Ranasinghe</h3>
+        <p>Master, Physics (UB)</p>
+        <ul class="meta"><li><a href="https://www.researchgate.net/profile/Umadini-Ranasinghe">ResearchGate</a></li><li><a href="https://www.linkedin.com/in/umadini-damsara-ranasinghe-161551166">LinkedIn</a></li></ul>
+      </article>
+
+      <article class="card">
+        <h3>Chiran Yasas Wijesundara Mudiyans</h3>
+        <p>PhD candidate, Physics (UB) — expected 2026</p>
+        <ul class="meta"><li><a href="https://www.linkedin.com/in/chiran-wijesundara-026b86337">LinkedIn</a></li><li><a href="https://arts-sciences.buffalo.edu/physics/faculty/graduate-student-directory.html">UB Directory</a></li></ul>
+      </article>
+
+      <article class="card">
+        <h3>Jeffrey Carvalho</h3>
+        <p>PhD, Physics (2025)</p>
+        <ul class="meta"><li><a href="https://www.researchgate.net/scientific-contributions/Jeffrey-Carvalho-2235650521">ResearchGate</a></li></ul>
+      </article>
+
+      <article class="card">
+        <h3>Guangpeng Xu</h3>
+        <p>PhD, Physics (2025)</p>
+        <ul class="meta"><li><a href="https://www.linkedin.com/in/guangpengxu">LinkedIn</a></li><li><a href="https://scholar.google.com/citations?hl=en&user=k1T67GwAAAAJ">Scholar</a></li><li><a href="https://www.researchgate.net/profile/Guangpeng-Xu-3">ResearchGate</a></li></ul>
+      </article>
+
+      <article class="card">
+        <h3>Muhammed Kilinc</h3>
+        <p>PhD, Physics (2021)</p>
+        <ul class="meta"><li><a href="https://scholar.google.com/citations?hl=en&user=oUK3BQ0AAAAJ">Scholar</a></li><li><a href="https://www.linkedin.com/in/mhkilinc">LinkedIn</a></li><li><a href="https://www.researchgate.net/profile/Muhammed-Kilinc">ResearchGate</a></li></ul>
+      </article>
+
+      <article class="card">
+        <h3>Steven Tarasek</h3>
+        <p>PhD, Physics (2020)</p>
+        <ul class="meta"><li><a href="https://www.researchgate.net/profile/Steven-Tarasek">ResearchGate</a></li><li><a href="https://scholargps.com/scholars/76878850767388/steven-tarasek">ScholarGPS</a></li></ul>
+      </article>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>© <span id="year"></span> Thomay Lab</p>
+  </div>
+  <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

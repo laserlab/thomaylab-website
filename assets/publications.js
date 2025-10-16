@@ -1,19 +1,19 @@
+// Load prebuilt publications from assets/publications.json (from ORCID via GitHub Action)
 async function initPublications() {
   try {
-    const res = await fetch("assets/publications.json");
+    const res = await fetch("assets/publications.json", {cache: "no-store"});
     const items = await res.json();
 
     function renderList(el, arr) {
       el.innerHTML = "";
       for (const it of arr) {
         const li = document.createElement("li");
-        const t = document.createElement("div");
-        t.className = "title";
-        if (it.url) { const a=document.createElement("a"); a.href=it.url; a.textContent=it.title; a.rel="noopener"; t.appendChild(a); }
+        const t = document.createElement("div"); t.className = "title";
+        if (it.url) { const a=document.createElement("a"); a.href=it.url; a.rel="noopener"; a.textContent=it.title; t.appendChild(a); }
         else { t.textContent = it.title; }
-        const meta = document.createElement("div"); meta.className="meta";
-        if (it.year) { const s=document.createElement("span"); s.textContent=it.year; meta.appendChild(s); }
-        if (it.type) { const s=document.createElement("span"); s.textContent=it.type.replace(/-/g," "); meta.appendChild(s); }
+        const meta = document.createElement("div"); meta.className = "meta";
+        if (it.year) { const s=document.createElement("span"); s.textContent = it.year; meta.appendChild(s); }
+        if (it.type) { const s=document.createElement("span"); s.textContent = it.type.replace(/-/g, " "); meta.appendChild(s); }
         if (it.doi) { const a=document.createElement("a"); a.href=`https://doi.org/${it.doi}`; a.textContent=`doi:${it.doi}`; meta.appendChild(a); }
         li.appendChild(t); li.appendChild(meta); el.appendChild(li);
       }
@@ -22,7 +22,7 @@ async function initPublications() {
     const full = document.getElementById("pubs-list");
     const prev = document.getElementById("pubs-preview-list");
 
-    // filters if present
+    // Filters if present
     const yf = document.getElementById("year-filter");
     const tf = document.getElementById("type-filter");
     if (yf) {
