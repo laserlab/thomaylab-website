@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Publications — Tim Thomay</title>
+  <meta name="description" content="Publications for Tim Thomay, synced from ORCID." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html">Tim Thomay</a>
+      <span class="tagline">University at Buffalo</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="index.html#about">About</a>
+      <a href="publications.html" aria-current="page">Publications</a>
+      <a href="index.html#research">Research</a>
+      <a href="index.html#teaching">Teaching</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<main class="section">
+  <div class="container">
+    <h1>Publications</h1>
+    <p id="orcid-sync" class="muted">
+      This page is automatically generated from ORCID (<a href="https://orcid.org/0000-0003-2271-6803">0000-0003-2271-6803</a>).
+      Update ORCID and the list will refresh here on next load.
+    </p>
+    <noscript><p>Please enable JavaScript to load publications from ORCID.</p></noscript>
+
+    <div class="filters">
+      <label>Filter by type:
+        <select id="type-filter">
+          <option value="">All</option>
+          <option value="journal-article">Journal articles</option>
+          <option value="conference-paper">Conference papers</option>
+          <option value="book-chapter">Book chapters</option>
+          <option value="preprint">Preprints</option>
+        </select>
+      </label>
+      <label>Year:
+        <select id="year-filter"><option value="">All</option></select>
+      </label>
+    </div>
+
+    <ul id="pubs-list" class="pubs-list"></ul>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>© <span id="year"></span> Tim Thomay</p>
+  </div>
+</footer>
+
+<script src="assets/publications.js" defer></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

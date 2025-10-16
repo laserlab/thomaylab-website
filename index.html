@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thomas May — University at Buffalo</title>
+  <meta name="description" content="Academic homepage for Thomas May (University at Buffalo). Research, publications, and teaching." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html">Thomay Lab</a>
+      <span class="tagline">University at Buffalo</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#about">About</a>
+      <a href="publications.html">Publications</a>
+      <a href="#research">Research</a>
+      <a href="#teaching">Teaching</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <h1 class="headline">Hi, I’m <span class="accent">Tim Thomay</span>.</h1>
+        <p class="subheadline">
+          I’m a faculty member at the University at Buffalo. This page collects my research,
+          publications, and teaching materials.
+        </p>
+        <div class="cta-row">
+          <a class="button" href="publications.html">View Publications</a>
+          <a class="button button-secondary" href="#contact">Get in touch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <div class="container grid-2">
+      <div>
+        <h2>About</h2>
+        <p>
+          Dr. Thomay is an experimental physicist specializing in solid state quantum light emitters, ultrafast dynamics of excitonic systems, and fiber integration of quantum detectors and sources. 
+          He is an assistant professor in the physics department at the State University of New York at Buffalo. 
+          He started to study physics in Konstanz Germany, with stops for his Bachelor’s degree at the Centro Brasileiro de Pesquisas Físicas, in Rio de Janeiro, Brasil under the supervision of Dr. Elisa Baggio-Saitovitch and the University of Vienna, Austria. 
+          After obtaining his master’s degree in Konstanz he also did his PhD there where he focussed on ultrafast spectroscopy and nanofabrication of nanoscale semiconductors and photonic structures. 
+          He subsequently won a postdoctoral fellowship grant to study at the National Institute of Standards and Technology (NIST) in Gaithersburg, MD, USA where he studied the quantum optical properties of III-VI Quantum Dots and their applications in Quantum Communication. 
+          After being a research scientist in the Electrical Engineering Department at the State University of New York at Buffalo, he became an Assistant Professor in the Physics Department.
+
+        </p>
+        <ul class="meta">
+          <li>ORCID: <a href="https://orcid.org/0000-0003-2271-6803" rel="me">0000-0003-2271-6803</a></li>
+          <li>Google Scholar: <a href="#" aria-disabled="true">add link</a></li>
+          <li>GitHub: <a href="https://github.com/" aria-disabled="true">add link</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>News</h3>
+        <ul class="news-list" id="news-list">
+          <li><time>2025-10-01</time> Website refreshed with auto-updating publications.</li>
+          <li><time>2025-09-12</time> New preprint posted (see Publications).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="research" class="section alt">
+    <div class="container">
+      <h2>Research</h2>
+      <p>
+        Replace this with a concise description of your research program. Consider linking to datasets or software
+        if available.
+      </p>
+      <div class="cards">
+        <article class="card">
+          <h3>Topic A</h3>
+          <p>One–two sentences about a current project.</p>
+        </article>
+        <article class="card">
+          <h3>Topic B</h3>
+          <p>One–two sentences about a current project.</p>
+        </article>
+        <article class="card">
+          <h3>Topic C</h3>
+          <p>One–two sentences about a current project.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="teaching" class="section">
+    <div class="container">
+      <h2>Teaching</h2>
+      <ul class="teaching-list">
+        <li><strong>Course Name (Term)</strong> — brief description and a link to syllabus (PDF).</li>
+        <li><strong>Course Name (Term)</strong> — brief description and a link to materials.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="pubs-preview" class="section">
+    <div class="container">
+      <h2>Selected Publications</h2>
+      <ul id="pubs-preview-list" class="pubs-list"></ul>
+      <p><a class="button button-inline" href="publications.html">See all publications →</a></p>
+    </div>
+  </section>
+
+  <section id="contact" class="section alt">
+    <div class="container grid-2">
+      <div>
+        <h2>Contact</h2>
+        <p>
+          Department, University at Buffalo<br/>
+          Buffalo, NY, USA
+        </p>
+        <p>Email: <a href="mailto:thomay@buffalo.edu">thomay@buffalo.edu</a></p>
+      </div>
+      <div class="card">
+        <h3>Links</h3>
+        <ul class="meta">
+          <li><a href="https://orcid.org/0000-0003-2271-6803">ORCID Profile</a></li>
+          <li><a href="publications.html#orcid-sync">How the publications list works</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>© <span id="year"></span> Tim Thomay — Content rights reserved. Code MIT-licensed.</p>
+  </div>
+</footer>
+
+<script src="assets/publications.js" defer></script>
+<script>
+  // Set year
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
