@@ -1,9 +1,9 @@
-/assets/publications.js
-/assets/publications.json
-/assets/style.css
 /index.html
-/openings.html
 /people.html
+/openings.html
 /publications.html
+/404.html
+/assets/style.css
+/assets/publications.js
 /scripts/build_publications.py
 /.github/workflows/pubs.yml
