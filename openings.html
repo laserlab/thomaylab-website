@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Openings — Thomay Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html">Thomay Lab</a>
+      <span class="tagline">University at Buffalo</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="index.html#about">About</a>
+      <a href="publications.html">Publications</a>
+      <a href="people.html">People</a>
+      <a href="index.html#teaching">Teaching</a>
+      <a href="openings.html" aria-current="page">Openings</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<main class="section">
+  <div class="container">
+    <h1>Openings</h1>
+    <p class="muted">There are currently no open positions in the Thomay Lab.</p>
+    <p>
+      However, we always welcome inquiries from motivated students and postdoctoral researchers
+      interested in our work on quantum optics, plasmonics, and nanostructures.
+    </p>
+    <h2>Future Opportunities</h2>
+    <ul class="teaching-list">
+      <li>Prospective graduate students should apply through the <a href="https://arts-sciences.buffalo.edu/physics/graduate.html" target="_blank">UB Department of Physics</a> and mention the Thomay Lab in their application materials.</li>
+      <li>Undergraduate students at UB interested in research experience are encouraged to email Dr. Thomay with a brief description of their interests and coursework.</li>
+    </ul>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container"><p>© <span id="year"></span> Thomay Lab</p></div>
+  <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

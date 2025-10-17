@@ -1,4 +1,5 @@
 name: Build publications
+
 on:
   push:
   workflow_dispatch:
@@ -6,22 +7,26 @@ on:
     - cron: '0 6 * * 1'  # Mondays 06:00 UTC
 
 permissions:
-  contents: write
+  contents: write  # Required so GITHUB_TOKEN can push the updated JSON
 
 jobs:
   build-pubs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           persist-credentials: true
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+
       - name: Build publications from ORCID
         run: |
           python scripts/build_publications.py
+
       - name: Commit updated publications.json
         run: |
           git config user.name "${{ github.actor }}"

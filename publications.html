@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Publications — Thomay Lab</title>
-  <meta name="description" content="Publications for the Thomay Lab, synced from ORCID." />
+  <meta name="description" content="Publications for the Thomay Lab, synced automatically from ORCID." />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css" />
 </head>
@@ -23,7 +23,8 @@
       <a href="index.html#contact">Contact</a>
       <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
     </nav>
-    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+    <button class="nav-toggle" aria-label="Toggle navigation"
+      onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
   </div>
 </header>
 
@@ -31,8 +32,8 @@
   <div class="container">
     <h1>Publications</h1>
     <p id="orcid-sync" class="muted">
-      Peer-reviewed articles, conference papers, preprints, and chapters from the Thomay Lab.
-      The list below syncs automatically from ORCID.
+      Peer-reviewed articles, conference papers, preprints, and chapters from the Thomay Lab.  
+      This list updates automatically from <a href="https://orcid.org/0000-0003-2271-6803" target="_blank">ORCID</a>.
     </p>
 
     <div class="filters">
@@ -46,7 +47,9 @@
         </select>
       </label>
       <label>Year:
-        <select id="year-filter"><option value="">All</option></select>
+        <select id="year-filter">
+          <option value="">All</option>
+        </select>
       </label>
     </div>
 
@@ -55,11 +58,19 @@
 </main>
 
 <footer class="site-footer">
-  <div class="container"><p>© <span id="year"></span> Thomay Lab</p></div>
-  <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
+  <div class="container">
+    <p>© <span id="year"></span> Thomay Lab</p>
+  </div>
+  <div class="container">
+    <p class="muted">
+      Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a>
+    </p>
+  </div>
 </footer>
 
 <script src="assets/publications.js" defer></script>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
