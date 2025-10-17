@@ -1,1 +1,261 @@
-[]
+[
+  {
+    "title": "Spectrally-resolved higher-order photon statistics of spontaneous parametric down-conversion",
+    "year": "2025",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1088/2040-8986/adfdfa"
+  },
+  {
+    "title": "Statistical model for quantum spin and photon number states",
+    "year": "2025",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1103/PhysRevA.111.012217"
+  },
+  {
+    "title": "Utilizing quantum fingerprints in plant cells to evaluate plant productivity",
+    "year": "2025",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1039/D5AN00326A"
+  },
+  {
+    "title": "Optimized higher-order photon state classification by machine learning",
+    "year": "2024",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1063/5.0215915"
+  },
+  {
+    "title": "Optimized higher-order photon state classification by machine learning",
+    "year": "2024",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://arxiv.org/abs/2404.16203"
+  },
+  {
+    "title": "Testing a discrete model for quantum spin with two sequential Stern-Gerlach detectors and photon Fock states",
+    "year": "2023",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://arxiv.org/abs/2304.13535"
+  },
+  {
+    "title": "Transition metal dichalcogenide graded alloy monolayers by chemical vapor deposition and comparison to 2D Ising model",
+    "year": "2022",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1063/5.0081929"
+  },
+  {
+    "title": "Intracavity second harmonic generation from a WSe2 monolayer in a passively mode-locked picosecond fiber laser",
+    "year": "2021",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1364/OME.426015"
+  },
+  {
+    "title": "Spatial mapping of exciton transition energy and strain in composition graded WS2(1−x)Se2x monolayer",
+    "year": "2020",
+    "type": "journal-article",
+    "doi": "",
+    "url": "http://dx.doi.org/10.1063/5.0021361"
+  },
+  {
+    "title": "Excitation power dependent Coulomb induced recombination dynamics in magnetically doped type-II quantum dots",
+    "year": "2020",
+    "type": "journal-article",
+    "doi": "",
+    "url": "https://doi.org/10.1088/2632-959X/ab86d9"
+  },
+  {
+    "title": "CdSe/CdMnS Nanoplatelets with Bilayer Core and Magnetically Doped Shell Exhibit Switchable Excitonic Circular Polarization: Implications for Lasers and Light-Emitting Diodes",
+    "year": "2020",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Realization of BaZrS3 chalcogenide perovskite thin films for optoelectronics",
+    "year": "2020",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Ag-carried CMC/functional copolymer/ODA-Mt wLED-treated NC and their responses to brain cancer cells",
+    "year": "2018",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Enhanced fatigue resistance of suppressed hysteresis in perovskite solar cells by an organic crosslinker",
+    "year": "2018",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Plasmoelectronic Sensor for Real-time On-chip Optical Characterization",
+    "year": "2017",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Simultaneous, full characterization of a single-photon state",
+    "year": "2017",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Time resolved photoluminescence study of CdSe/CdMnS/CdS core/shell/shell nanoplatelets heterostructures",
+    "year": "2016",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Time-resolved photoluminescence study of CdSe/CdMnS/CdS core/multi-shell nanoplatelets",
+    "year": "2016",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Ultrahigh molecular weight linear block copolymers: Rapid access by reversible-deactivation radical polymerization and self-assembly into large domain nanostructures",
+    "year": "2016",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Background-Free Ultrafast Pump-Probe Transmission Spectroscopy of Graphene",
+    "year": "2015",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Statistically background-free, phase-preserving parametric up-conversion with faint light",
+    "year": "2015",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Femtosecond nonlinear ultrasonics in gold probed with ultrashort surface plasmons",
+    "year": "2013",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Dynamics of nonclassical light from a single solid-state quantum emitter",
+    "year": "2012",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Manipulating single photons from disparate quantum sources to be indistinguishable",
+    "year": "2012",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Spectral dependence of the magnetic modulation of surface plasmon polaritons in noble/ferromagnetic/noble metal films",
+    "year": "2012",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Coulomb correlations in quantum dots and their signatures in single dot femtosecond pump-probe signals",
+    "year": "2011",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Role of Coulomb correlations for femtosecond pump-probe signals obtained from a single quantum dot",
+    "year": "2011",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Triggered single-photon emission in the red spectral range from optically excited InP/(Al, Ga) InP quantum dots embedded in micropillars up to 100 K",
+    "year": "2011",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Active magneto-plasmonics in hybrid metal--ferromagnet structures",
+    "year": "2010",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Enhancement of the magnetic modulation of surface plasmon polaritons in Au/Co/Au films",
+    "year": "2010",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Optical properties of red emitting self-assembled InP/(Al 0.20 Ga 0.80) 0.51 In 0.49 P quantum dot based micropillars",
+    "year": "2010",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Femtosecond few-fermion dynamics and deterministic single-photon gain in a quantum dot",
+    "year": "2009",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Femtosecond surface plasmon interferometry",
+    "year": "2009",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Nat. Photonics 4, 107 (2010)",
+    "year": "2009",
+    "type": "other",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Colloidal ZnO quantum dots in ultraviolet pillar microcavities",
+    "year": "2008",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Colloidal quantum dots in all-dielectric high-Q pillar microcavities",
+    "year": "2007",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  },
+  {
+    "title": "Defect induced low temperature ferromagnetism in Zn 1- x Co x O films",
+    "year": "2007",
+    "type": "journal-article",
+    "doi": "",
+    "url": ""
+  }
+]
