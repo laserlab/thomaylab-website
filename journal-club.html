@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thomay Lab — University at Buffalo</title>
+  <meta name="description" content="Academic homepage for the Thomay Lab (University at Buffalo). Research, publications, teaching, and contact." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <a href="index.html">Thomay Lab</a>
+      <span class="tagline">University at Buffalo</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#about">About</a>
+      <a href="publications.html">Publications</a>
+      <a href="#research">Research</a>
+      <a href="#teaching">Teaching</a>
+      <a href="#contact">Contact</a>
+      <a href="people.html">People</a>
+      <a href="openings.html">Openings</a>
+      <a href="https://discord.gg/NycYZBWk6j" href="journal-club.html">Journal Club</a>
+      <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+<main>
+  <section class="section">
+    <div class="container">
+      <h1>Quantum Optics Journal Club</h1>
+      <p class="muted">Meets every 4 weeks on <strong>Mondays</strong> at <strong>1:00 PM</strong>. First meeting: <strong>November 10, 2025</strong>.</p>
+      <div style="display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; margin:.75rem 0 1.25rem;">
+        <a id="qojc-ics-btn" class="button" href="#" download="QO_Journal_Club_Series.ics">Add series (.ics)</a>
+        <a href="#first-talk" class="button-inline">Jump to first talk</a>
+      </div>
+      <div class="card" style="padding:1rem 1.1rem;">
+        <h2 id="upcoming" style="margin-top:0;">Upcoming Meeting Dates</h2>
+        <ul id="qojc-dates" class="news-list"></ul>
+        <p class="muted" style="margin-top:.5rem;">The series occurs every 4 weeks starting November 10, 2025 at 1:00 PM.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="first-talk">
+    <div class="container">
+      <div class="grid-2">
+        <div>
+          <h2 style="margin-top:0;">First Talk</h2>
+          <p><strong>Title:</strong> <em>Cooperative emission in spin injected electrically contacted quantum dots</em></p>
+          <p><strong>Speakers:</strong> Chiran Wijesundara Mudiyans and Vincent Iglesias-Cardinale</p>
+          <p><strong>When:</strong> Monday, November 10, 2025 at 1:00 PM</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;">Location</h3>
+          <ul class="meta">
+            <li><strong>Room:</strong> <span class="muted">TBD</span></li>
+            <li><strong>Address:</strong> <span class="muted">TBD</span></li>
+            <li><strong>Online:</strong> <span class="muted">TBD (Zoom/Meet)</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem;">
+        <details open>
+          <summary><strong>Abstract</strong></summary>
+          <p>Evidence of non-trivial photon–matter interaction has been observed in a 2-dimensional, spin-polarized, electronically excited ensemble of quantum dots. In particular, intense spikes in the relative frequency of |2⟩ photon events have been reproduced with a range of shapes of incident electronic current pulses where no analogous behavior in |1⟩ photon events has been observed. We hypothesize that superradiance may be responsible for the unique behavior and investigate this possibility by implementing a Monte Carlo Wave Function approach to simulate the dynamics of the system under a simple model Hamiltonian. Additionally, we use a simple theoretical model to predict whether superradiance is possible in the system in the first place.</p>
+        </details>
+      </div>
+      <p class="muted" style="margin-top:.75rem;">To receive updates or volunteer a paper/talk, email <code>organizer@yourdomain.edu</code>.</p>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      // Series config
+      const START_LOCAL = "2025-11-10T13:00:00";
+      const INTERVAL_DAYS = 28;
+      const DURATION_MIN = 60;
+      const SHOW = 8;
+      const locale = navigator.language || "en-US";
+
+      // Render dates
+      const ul = document.getElementById("qojc-dates");
+      if (ul) {
+        ul.innerHTML = "";
+        let now = new Date();
+        let occ = new Date(START_LOCAL);
+        while (occ < now) occ = new Date(occ.getTime() + INTERVAL_DAYS*24*60*60*1000);
+        for (let i=0; i<SHOW; i++) {
+          const li = document.createElement("li");
+          li.textContent = occ.toLocaleString(locale, { weekday:"long", year:"numeric", month:"long", day:"numeric", hour:"numeric", minute:"2-digit" });
+          ul.appendChild(li);
+          occ = new Date(occ.getTime() + INTERVAL_DAYS*24*60*60*1000);
+        }
+      }
+
+      // ICS builder
+      function buildICS() {
+        const uid = "qojc-" + Math.random().toString(36).slice(2) + "@thomaylab";
+        const dtstamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+        const start = "20251110T130000"; // floating local
+        const ics = [
+          "BEGIN:VCALENDAR",
+          "VERSION:2.0",
+          "PRODID:-//Thomay Lab//QO Journal Club//EN",
+          "CALSCALE:GREGORIAN",
+          "METHOD:PUBLISH",
+          "BEGIN:VEVENT",
+          "UID:" + uid,
+          "DTSTAMP:" + dtstamp,
+          "SUMMARY:Quantum Optics Journal Club",
+          "DESCRIPTION:Meets every 4 weeks on Mondays at 1:00 PM. First talk: Cooperative emission in spin injected electrically contacted quantum dots.",
+          "DTSTART:" + start,
+          "DURATION:PT60M",
+          "RRULE:FREQ=WEEKLY;INTERVAL=4;BYDAY=MO",
+          "END:VEVENT",
+          "END:VCALENDAR"
+        ].join("\r\n");
+        return "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+      }
+      const icsBtn = document.getElementById("qojc-ics-btn");
+      if (icsBtn) icsBtn.href = buildICS();
+    })();
+  </script>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>© <span id="year"></span> Thomay Lab — Content rights reserved. Code MIT-licensed.</p>
+  </div>
+  <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
