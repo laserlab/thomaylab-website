@@ -19,8 +19,18 @@ The following images are used on this website and are copyrighted by the Univers
 
 **Attribution**: These images may be used on the Thomay Lab website for academic and research purposes. Any external use or republication requires permission from University at Buffalo.
 
+## Tim Thomay Lab Photos
+
+The following image was photographed by Tim Thomay:
+
+### Lab Group Photo
+- **Photographer**: Tim Thomay
+- **Image File**: `assets/img/GroupPhoto.png`
+- **Copyright**: © Tim Thomay. Used on Thomay Lab website.
+
 ## Usage Guidelines
 
-- Images are displayed on `index.html` (lab photo), `people.html` (team photo), and related pages
+- UBPhoto images (1A1A*) are displayed on `index.html` (lab photo), `people.html` (team photo), and related pages
 - Caption/attribution is included in the HTML with photographer credit
-- Do not redistribute without proper attribution to Douglas Levere and University at Buffalo
+- Do not redistribute UBPhoto images without proper attribution to Douglas Levere and University at Buffalo
+- GroupPhoto.png may be used on the Thomay Lab website
