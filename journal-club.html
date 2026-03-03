@@ -28,6 +28,15 @@
       <a href="openings.html">Openings</a>
       <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
     </nav>
+    <div class="theme-switcher" id="theme-switcher">
+      <button class="theme-switcher-btn" aria-label="Change color theme" title="Choose laser color">🔬 Theme</button>
+      <div class="theme-dropdown" id="theme-dropdown" style="display:none;">
+        <button data-theme="default">Default (Blue)</button>
+        <button data-theme="green">Green (Nd:YAG)</button>
+        <button data-theme="red">Red (HeNe)</button>
+        <button data-theme="blue">Blue (GaN)</button>
+      </div>
+    </div>
     <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
   </div>
 </header>
@@ -164,6 +173,55 @@
   </div>
   <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
 </footer>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Theme switcher
+(function() {
+  const STORAGE_KEY = 'thomay-lab-theme';
+  const themeSwitcher = document.getElementById('theme-switcher');
+  const themeBtn = themeSwitcher.querySelector('.theme-switcher-btn');
+  const themeDropdown = document.getElementById('theme-dropdown');
+  const themeOptions = themeDropdown.querySelectorAll('button');
+
+  function initTheme() {
+    const saved = localStorage.getItem(STORAGE_KEY) || 'default';
+    setTheme(saved);
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    themeOptions.forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-theme') === theme) {
+        btn.classList.add('active');
+      }
+    });
+  }
+
+  themeBtn.addEventListener('click', () => {
+    const isOpen = themeDropdown.style.display !== 'none';
+    themeDropdown.style.display = isOpen ? 'none' : 'block';
+  });
+
+  themeOptions.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const theme = btn.getAttribute('data-theme');
+      setTheme(theme);
+      themeDropdown.style.display = 'none';
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!themeSwitcher.contains(e.target)) {
+      themeDropdown.style.display = 'none';
+    }
+  });
+
+  initTheme();
+})();
+</script>
 </body>
 </html>

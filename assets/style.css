@@ -9,6 +9,27 @@
   --card: #191c23;
   --border: #2a2f3a;
 }
+
+/* Laser-inspired color themes */
+:root[data-theme="default"] {
+  --accent: #7cc4ff;
+  --link: #8ed1fc;
+}
+
+:root[data-theme="green"] {
+  --accent: #39ff14;
+  --link: #5fff3f;
+}
+
+:root[data-theme="red"] {
+  --accent: #ff2020;
+  --link: #ff5555;
+}
+
+:root[data-theme="blue"] {
+  --accent: #00d4ff;
+  --link: #33e5ff;
+}
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -56,3 +77,12 @@ a:hover { text-decoration: underline; }
 .pubs-list .title { font-weight: 600; }
 .pubs-list .meta { display: flex; flex-wrap: wrap; gap: .75rem; border: none; margin-top: .25rem; }
 .site-footer { border-top: 1px solid var(--border); padding: 1.2rem 0; color: var(--muted); background: rgba(11,12,16,0.8); }
+
+/* Theme switcher */
+.theme-switcher { position: relative; }
+.theme-switcher-btn { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: .4rem .6rem; border-radius: 8px; font-size: .9rem; cursor: pointer; font-family: Inter, sans-serif; }
+.theme-switcher-btn:hover { background: var(--panel); }
+.theme-dropdown { position: absolute; top: 100%; right: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-top: .5rem; min-width: 140px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.theme-dropdown button { width: 100%; text-align: left; background: transparent; border: none; color: var(--text); padding: .6rem .8rem; font-size: .9rem; cursor: pointer; font-family: Inter, sans-serif; transition: background 0.2s; }
+.theme-dropdown button:hover { background: var(--border); }
+.theme-dropdown button.active { color: var(--accent); font-weight: 600; }
