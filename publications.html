@@ -32,29 +32,47 @@
 <main class="section">
   <div class="container">
     <h1>Publications</h1>
-    <p id="orcid-sync" class="muted">
-      Peer-reviewed articles, conference papers, preprints, and chapters from the Thomay Lab.  
-      This list updates automatically from <a href="https://orcid.org/0000-0003-2271-6803" target="_blank">ORCID</a>.
+    <p class="muted">
+      Peer-reviewed articles, preprints, and book chapters from the Thomay Lab.
     </p>
 
-    <div class="filters">
-      <label>Filter by type:
-        <select id="type-filter">
-          <option value="">All</option>
-          <option value="journal-article">Journal articles</option>
-          <option value="conference-paper">Conference papers</option>
-          <option value="book-chapter">Book chapters</option>
-          <option value="preprint">Preprints</option>
-        </select>
-      </label>
-      <label>Year:
-        <select id="year-filter">
-          <option value="">All</option>
-        </select>
-      </label>
-    </div>
+    <h2 style="margin-top:1.5rem; margin-bottom:.75rem;">Highlighted Publications</h2>
+    <ul class="pubs-list">
+      <li>
+        <div class="title"><a href="https://doi.org/10.1039/D5AN00326A" target="_blank" rel="noopener">Utilizing quantum fingerprints in plant cells to evaluate plant productivity</a></div>
+        <div class="meta"><span>2025</span><span>journal article</span></div>
+      </li>
+      <li>
+        <div class="title"><a href="https://doi.org/10.1088/2040-8986/adfdfa" target="_blank" rel="noopener">Spectrally-resolved higher-order photon statistics of spontaneous parametric down-conversion</a></div>
+        <div class="meta"><span>2025</span><span>journal article</span></div>
+      </li>
+      <li>
+        <div class="title"><a href="https://doi.org/10.1103/PhysRevA.111.012217" target="_blank" rel="noopener">Statistical model for quantum spin and photon number states</a></div>
+        <div class="meta"><span>2025</span><span>journal article</span></div>
+      </li>
+      <li>
+        <div class="title"><a href="https://doi.org/10.1063/5.0215915" target="_blank" rel="noopener">Optimized higher-order photon state classification by machine learning</a></div>
+        <div class="meta"><span>2024</span><span>journal article</span></div>
+      </li>
+      <li>
+        <div class="title"><a href="https://opg.optica.org/ome/fulltext.cfm?uri=ome-11-6-1603&id=452707" target="_blank" rel="noopener">Intracavity second harmonic generation from a WSe₂ monolayer in a passively mode-locked picosecond fiber laser</a></div>
+        <div class="meta"><span>2021</span><span>journal article</span></div>
+      </li>
+    </ul>
 
-    <ul id="pubs-list" class="pubs-list"></ul>
+    <h2 style="margin-top:1.5rem; margin-bottom:.75rem;">Complete Publication List</h2>
+    <div class="card">
+      <p>
+        For a comprehensive and up-to-date list of all publications, visit:
+      </p>
+      <div style="display:flex; gap:.75rem; flex-wrap:wrap; margin:1rem 0;">
+        <a href="https://orcid.org/0000-0003-2271-6803" target="_blank" rel="noopener" class="button">View on ORCID</a>
+        <a href="https://scholar.google.com/citations?user=2MD7MJ4AAAAJ&hl=en&oi=ao" target="_blank" rel="noopener" class="button">View on Google Scholar</a>
+      </div>
+      <p class="muted" style="margin:0; font-size:.9rem;">
+        The complete publication list is automatically synced from ORCID. Updates are reflected weekly via GitHub Actions.
+      </p>
+    </div>
   </div>
 </main>
 
@@ -69,7 +87,6 @@
   </div>
 </footer>
 
-<script src="assets/publications.js" defer></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>

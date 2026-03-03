@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Thomay Lab — University at Buffalo</title>
-  <meta name="description" content="Academic homepage for the Thomay Lab (University at Buffalo). Research, publications, teaching, and contact." />
+  <title>Journal Club — Thomay Lab</title>
+  <meta name="description" content="Quantum Optics Journal Club at the Thomay Lab, University at Buffalo." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css" />
 </head>
+<body>
 <header class="site-header">
   <div class="container">
     <div class="brand">
@@ -17,14 +18,14 @@
       <span class="tagline">University at Buffalo</span>
     </div>
     <nav class="nav" id="nav">
-      <a href="#about">About</a>
+      <a href="index.html#about">About</a>
       <a href="publications.html">Publications</a>
-      <a href="#research">Research</a>
-      <a href="#teaching">Teaching</a>
-      <a href="#contact">Contact</a>
+      <a href="journal-club.html" aria-current="page">Journal Club</a>
+      <a href="index.html#research">Research</a>
+      <a href="index.html#teaching">Teaching</a>
+      <a href="index.html#contact">Contact</a>
       <a href="people.html">People</a>
       <a href="openings.html">Openings</a>
-      <a href="https://discord.gg/NycYZBWk6j" href="journal-club.html">Journal Club</a>
       <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
     </nav>
     <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
@@ -34,44 +35,73 @@
   <section class="section">
     <div class="container">
       <h1>Quantum Optics Journal Club</h1>
-      <p class="muted">Meets every 4 weeks on <strong>Mondays</strong> at <strong>1:00 PM</strong>. First meeting: <strong>November 10, 2025</strong>.</p>
+      <p class="muted">Meets every 4 weeks on <strong>Mondays</strong> at <strong>1:00 PM</strong> in <strong>Fronczak 245</strong>. Pizza provided.</p>
       <div style="display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; margin:.75rem 0 1.25rem;">
         <a id="qojc-ics-btn" class="button" href="#" download="QO_Journal_Club_Series.ics">Add series (.ics)</a>
-        <a href="#first-talk" class="button-inline">Jump to first talk</a>
+        <a href="#past-talks" class="button-inline">Jump to past talks</a>
       </div>
       <div class="card" style="padding:1rem 1.1rem;">
         <h2 id="upcoming" style="margin-top:0;">Upcoming Meeting Dates</h2>
         <ul id="qojc-dates" class="news-list"></ul>
-        <p class="muted" style="margin-top:.5rem;">The series occurs every 4 weeks starting November 10, 2025 at 1:00 PM.</p>
+        <p class="muted" style="margin-top:.5rem;">The series occurs every 4 weeks. To receive updates or volunteer a paper/talk, email <code>thomay@buffalo.edu</code>.</p>
       </div>
     </div>
   </section>
 
-  <section class="section alt" id="first-talk">
+  <section class="section alt" id="past-talks">
     <div class="container">
-      <div class="grid-2">
-        <div>
-          <h2 style="margin-top:0;">First Talk</h2>
-          <p><strong>Title:</strong> <em>Cooperative emission in spin injected electrically contacted quantum dots</em></p>
-          <p><strong>Speakers:</strong> Chiran Wijesundara Mudiyans and Vincent Iglesias-Cardinale</p>
-          <p><strong>When:</strong> Monday, November 10, 2025 at 1:00 PM</p>
+      <h2>Past Talks</h2>
+
+      <!-- February 9, 2026 talk -->
+      <div style="margin-bottom:2rem;">
+        <div class="grid-2">
+          <div>
+            <h3 style="margin-top:0;">Testing the Born rule through higher-order interference with neutron OAM states</h3>
+            <p><strong>Speaker:</strong> Priyanka Vadnere</p>
+            <p><strong>Date:</strong> Monday, February 9, 2026 at 1:00 PM</p>
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0;">Location</h4>
+            <ul class="meta">
+              <li><strong>Room:</strong> <span class="muted">245</span></li>
+              <li><strong>Address:</strong> <span class="muted">Fronczak</span></li>
+              <li><strong>Format:</strong> <span class="muted">In person + Pizza</span></li>
+            </ul>
+          </div>
         </div>
-        <div class="card">
-          <h3 style="margin-top:0;">Location</h3>
-          <ul class="meta">
-            <li><strong>Room:</strong> <span class="muted">206E</span></li>
-            <li><strong>Address:</strong> <span class="muted">Fronczak</span></li>
-            <li><strong>Online:</strong> <span class="muted">In person</span></li>
-          </ul>
+        <div class="card" style="margin-top:1rem;">
+          <details>
+            <summary><strong>Abstract</strong></summary>
+            <p>The Born rule is a central postulate of quantum mechanics stating that measurement probabilities are given by the squared magnitude of the wavefunction. A direct implication is the absence of genuine higher-order interference: all multi-path interference should be reducible to pairwise contributions, implying that there should be no genuine three-path or higher-order interference beyond what is expected from ordinary wave superposition. This prediction was tested experimentally in a three-slit photon experiment, which measured all combinations of open and closed slits to isolate a third-order interference term and found it consistent with zero. Related tests and proposals have been explored using matter waves, including atomic interferometry.</p>
+            <p>We propose extending these tests to massive particles using neutron orbital angular momentum (OAM) states. OAM modes provide a set of orthogonal, controllable alternatives that can be selectively prepared and combined, enabling a direct analogue of single-, double-, and triple-slit configurations in mode space. By inserting three independent grating arrays generating OAM and measuring the neutron intensity for all combinations of arrays, one can construct the same higher‑order interference metric used in optical experiments. This approach enables a quantitative test of the Born rule with neutrons, complements existing photon and atomic studies and provides a scalable, mode‑based platform for precision searches for higher‑order quantum interference.</p>
+          </details>
         </div>
       </div>
-      <div class="card" style="margin-top:1rem;">
-        <details open>
-          <summary><strong>Abstract</strong></summary>
-          <p>Evidence of non-trivial photon–matter interaction has been observed in a 2-dimensional, spin-polarized, electronically excited ensemble of quantum dots. In particular, intense spikes in the relative frequency of |2⟩ photon events have been reproduced with a range of shapes of incident electronic current pulses where no analogous behavior in |1⟩ photon events has been observed. We hypothesize that superradiance may be responsible for the unique behavior and investigate this possibility by implementing a Monte Carlo Wave Function approach to simulate the dynamics of the system under a simple model Hamiltonian. Additionally, we use a simple theoretical model to predict whether superradiance is possible in the system in the first place.</p>
-        </details>
+
+      <!-- November 10, 2025 talk -->
+      <div>
+        <div class="grid-2">
+          <div>
+            <h3 style="margin-top:0;">Cooperative emission in spin injected electrically contacted quantum dots</h3>
+            <p><strong>Speakers:</strong> Chiran Wijesundara Mudiyans and Vincent Iglesias-Cardinale</p>
+            <p><strong>Date:</strong> Monday, November 10, 2025 at 1:00 PM</p>
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0;">Location</h4>
+            <ul class="meta">
+              <li><strong>Room:</strong> <span class="muted">206E</span></li>
+              <li><strong>Address:</strong> <span class="muted">Fronczak</span></li>
+              <li><strong>Format:</strong> <span class="muted">In person</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="margin-top:1rem;">
+          <details>
+            <summary><strong>Abstract</strong></summary>
+            <p>Evidence of non-trivial photon–matter interaction has been observed in a 2-dimensional, spin-polarized, electronically excited ensemble of quantum dots. In particular, intense spikes in the relative frequency of |2⟩ photon events have been reproduced with a range of shapes of incident electronic current pulses where no analogous behavior in |1⟩ photon events has been observed. We hypothesize that superradiance may be responsible for the unique behavior and investigate this possibility by implementing a Monte Carlo Wave Function approach to simulate the dynamics of the system under a simple model Hamiltonian. Additionally, we use a simple theoretical model to predict whether superradiance is possible in the system in the first place.</p>
+          </details>
+        </div>
       </div>
-      <p class="muted" style="margin-top:.75rem;">To receive updates or volunteer a paper/talk, email <code>thomay@buffalo.edu</code>.</p>
     </div>
   </section>
 
@@ -114,7 +144,7 @@
           "UID:" + uid,
           "DTSTAMP:" + dtstamp,
           "SUMMARY:Quantum Optics Journal Club",
-          "DESCRIPTION:Meets every 4 weeks on Mondays at 1:00 PM. First talk: Cooperative emission in spin injected electrically contacted quantum dots.",
+          "DESCRIPTION:Meets every 4 weeks on Mondays at 1:00 PM in Fronczak 245.",
           "DTSTART:" + start,
           "DURATION:PT60M",
           "RRULE:FREQ=WEEKLY;INTERVAL=4;BYDAY=MO",

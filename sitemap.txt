@@ -2,6 +2,7 @@
 /people.html
 /openings.html
 /publications.html
+/journal-club.html
 /404.html
 /assets/style.css
 /assets/publications.js
