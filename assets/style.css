@@ -80,9 +80,10 @@ a:hover { text-decoration: underline; }
 
 /* Theme switcher */
 .theme-switcher { position: relative; }
-.theme-switcher-btn { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: .4rem .6rem; border-radius: 8px; font-size: .9rem; cursor: pointer; font-family: Inter, sans-serif; }
+.theme-switcher-btn { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: .4rem .5rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer; font-family: Inter, sans-serif; display: flex; align-items: center; justify-content: center; }
 .theme-switcher-btn:hover { background: var(--panel); }
-.theme-dropdown { position: absolute; top: 100%; right: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-top: .5rem; min-width: 140px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.theme-dropdown { position: absolute; top: 100%; right: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-top: .5rem; min-width: 180px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.theme-dropdown-header { padding: .6rem .8rem; font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
 .theme-dropdown button { width: 100%; text-align: left; background: transparent; border: none; color: var(--text); padding: .6rem .8rem; font-size: .9rem; cursor: pointer; font-family: Inter, sans-serif; transition: background 0.2s; }
 .theme-dropdown button:hover { background: var(--border); }
 .theme-dropdown button.active { color: var(--accent); font-weight: 600; }
