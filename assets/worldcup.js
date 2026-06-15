@@ -215,7 +215,7 @@ async function renderLeaderboard() {
   if (!rows.length) { wrap.append(el("p", { class: "muted" }, "No players yet — be the first to join.")); return; }
   const table = el("table", { class: "lb-table" },
     el("thead", {}, el("tr", {}, el("th", {}, "#"), el("th", { class: "team-cell" }, "Player"),
-      el("th", {}, "Pts"), el("th", {}, "Scored"))));
+      el("th", {}, "Pts"), el("th", {}, "Played"))));
   const tb = el("tbody");
   rows.forEach((r, i) => {
     const mine = me && r.player_id === me.id;
