@@ -154,7 +154,7 @@ function matchRow(match) {
   awayIn.addEventListener("input", onIn);
 
   const ko = new Date(match.kickoff_at);
-  const koLabel = ko.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const koLabel = ko.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
   return el("div", { class: "fixture" + (locked ? " locked" : "") },
     el("span", { class: "fx-kick" }, locked ? (match.played ? "FT" : "🔒") : koLabel),
