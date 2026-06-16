@@ -75,10 +75,18 @@ async function join(name, passcode) {
     if (existing.passcode_hash !== hash) throw new Error("That name is taken and the passcode doesn't match.");
     me = { id: existing.id, display_name: existing.display_name, hash };
   } else {
+    // New account. If signups are locked (players_insert policy removed), the
+    // insert is rejected by RLS — show a friendly "closed" message instead.
     const { data: created, error: e2 } = await probe
       .from("players").insert({ display_name: name, passcode_hash: hash })
       .select("id, display_name").single();
-    if (e2) throw e2;
+    if (e2) {
+      const msg = (e2.message || "").toLowerCase();
+      if (e2.code === "42501" || msg.includes("row-level security") || msg.includes("policy")) {
+        throw new Error("Signups are closed — this game is locked to the existing players. If you already have an account, check your name and passcode.");
+      }
+      throw e2;
+    }
     me = { id: created.id, display_name: created.display_name, hash };
   }
   sb = makeClient(hash);  // authed client carries the header for RLS
