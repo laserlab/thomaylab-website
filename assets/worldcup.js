@@ -223,7 +223,7 @@ async function renderLeaderboard() {
   if (!rows.length) { wrap.append(el("p", { class: "muted" }, "No players yet — be the first to join.")); return; }
   const table = el("table", { class: "lb-table" },
     el("thead", {}, el("tr", {}, el("th", {}, "#"), el("th", { class: "team-cell" }, "Player"),
-      el("th", {}, "Pts"), el("th", {}, "Played"))));
+      el("th", {}, "Pts"), el("th", { title: "Knockout-stage points (subset of Pts)" }, "KO"), el("th", {}, "Played"))));
   const tb = el("tbody");
   rows.forEach((r, i) => {
     const mine = me && r.player_id === me.id;
@@ -231,6 +231,7 @@ async function renderLeaderboard() {
       el("td", {}, String(i + 1)),
       el("td", { class: "team-cell" }, r.display_name),
       el("td", {}, String(r.total_points)),
+      el("td", {}, String(r.knockout_points ?? 0)),
       el("td", {}, String(r.scored_matches))));
   });
   table.append(tb);
