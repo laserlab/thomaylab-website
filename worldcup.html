@@ -204,8 +204,35 @@
     <h1>World Cup 2026 — Prediction Game</h1>
     <p class="muted">USA · Canada · Mexico — predict the scores, climb the leaderboard. <em>(private)</em></p>
     <div id="auth-bar"><!-- join/login UI injected by worldcup.js --></div>
-    <h2>Knockout Bracket</h2>
-    <p class="scroll-hint">↔ Scroll sideways to see the full bracket.</p>
+
+    <!-- ===================== LEADERBOARD (points) ===================== -->
+    <h2 id="leaderboard-section">Leaderboard</h2>
+    <div id="leaderboard">
+      <p class="muted">Loading…</p>
+    </div>
+
+    <!-- ===================== PREDICTIONS ===================== -->
+    <h2 id="predict">Your Predictions</h2>
+    <p class="muted">
+      Enter a predicted score for each match before kickoff. Scoring:
+      <strong>exact score 4</strong>, <strong>correct goal difference 3</strong>,
+      <strong>correct tendency 2</strong>, wrong 0. Picks lock at kickoff (🔒).
+      Knockout games are scored on the result <strong>after extra time</strong> —
+      a penalty shootout counts as a draw.
+    </p>
+
+    <h3>Knockout bracket</h3>
+    <div id="fixtures-ko" class="fixtures">
+      <p class="muted">Knockout fixtures appear here as rounds are seeded.</p>
+    </div>
+
+    <h3>Group matches</h3>
+    <div id="fixtures-group" class="fixtures">
+      <p class="muted">Loading fixtures…</p>
+    </div>
+
+    <!-- legacy static bracket removed; the live bracket above renders from the DB -->
+    <div hidden>
 
     <div class="bracket-wrap">
       <div class="bracket">
@@ -303,31 +330,7 @@
       </ul>
     </div>
 
-    <!-- ===================== PREDICTIONS ===================== -->
-    <h2 id="predict">Your Predictions</h2>
-    <p class="muted">
-      Enter a predicted score for each match before kickoff. Scoring:
-      <strong>exact score 4</strong>, <strong>correct goal difference 3</strong>,
-      <strong>correct tendency 2</strong>, wrong 0. Picks lock at kickoff (🔒).
-      Knockout games are scored on the result <strong>after extra time</strong> —
-      a penalty shootout counts as a draw.
-    </p>
-
-    <h3>Group matches</h3>
-    <div id="fixtures-group" class="fixtures">
-      <p class="muted">Loading fixtures…</p>
-    </div>
-
-    <h3>Knockout matches</h3>
-    <div id="fixtures-ko" class="fixtures">
-      <p class="muted">Knockout fixtures appear here as rounds are seeded.</p>
-    </div>
-
-    <!-- ===================== LEADERBOARD ===================== -->
-    <h2 id="leaderboard-section">Leaderboard</h2>
-    <div id="leaderboard">
-      <p class="muted">Loading…</p>
-    </div>
+    </div><!-- /legacy static bracket (hidden) -->
 
   </div>
 </main>
