@@ -25,7 +25,7 @@ The following image was photographed by Tim Thomay:
 
 ### Lab Group Photo
 - **Photographer**: Tim Thomay
-- **Image File**: `assets/img/lab-group-photo.png` — Featured on people.html
+- **Image File**: `assets/img/lab-group-photo.jpg` — Featured on people.html
 - **Copyright**: © Tim Thomay. Used on Thomay Lab website.
 
 ## Usage Guidelines
