@@ -1,0 +1,11 @@
+[
+  { "label": "About", "href": "/index.html#about" },
+  { "label": "Research", "href": "/index.html#research" },
+  { "label": "Publications", "href": "/publications.html" },
+  { "label": "People", "href": "/people.html" },
+  { "label": "Journal Club", "href": "/journal-club.html" },
+  { "label": "Teaching", "href": "/index.html#teaching" },
+  { "label": "Openings", "href": "/openings.html" },
+  { "label": "Contact", "href": "/index.html#contact" },
+  { "label": "Discord", "href": "https://discord.gg/NycYZBWk6j", "external": true }
+]

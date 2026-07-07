@@ -1,0 +1,32 @@
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <a href="/index.html">{{ site.name }}</a>
+      <span class="tagline">{{ site.tagline }}</span>
+    </div>
+    <nav class="nav" id="nav">
+      {%- for item in nav %}
+      <a href="{{ item.href }}"{% if item.external %} target="_blank"{% endif %}{% if item.href == page.url %} aria-current="page"{% endif %}>{{ item.label }}</a>
+      {%- endfor %}
+    </nav>
+    {%- if theme_switcher != false %}
+    <div class="theme-switcher" id="theme-switcher">
+      <button class="theme-switcher-btn" aria-label="Choose your favorite laser" title="Choose your favorite laser">
+        <svg class="laser-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="20,4 18,8 22,6" fill="currentColor"/>
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </button>
+      <div class="theme-dropdown" id="theme-dropdown" style="display:none;">
+        <div class="theme-dropdown-header">Choose your favorite laser</div>
+        <button data-theme="default">Default</button>
+        <button data-theme="green">Green (Nd:YAG)</button>
+        <button data-theme="red">Red (HeNe)</button>
+        <button data-theme="blue">Blue (GaN)</button>
+      </div>
+    </div>
+    {%- endif %}
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+  </div>
+</header>
