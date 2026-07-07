@@ -5,6 +5,7 @@
   { "label": "People", "href": "/people.html" },
   { "label": "Journal Club", "href": "/journal-club.html" },
   { "label": "Teaching", "href": "/index.html#teaching" },
+  { "label": "Outreach", "href": "/outreach/bb84/" },
   { "label": "Openings", "href": "/openings.html" },
   { "label": "Contact", "href": "/index.html#contact" },
   { "label": "Discord", "href": "https://discord.gg/NycYZBWk6j", "external": true }
