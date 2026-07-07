@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>After the photons — sifting, error estimation, privacy amplification</title>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --bg-2: #121828;
+    --panel: #182135;
+    --panel-2: #1f2a44;
+    --border: #2c3a5c;
+    --text: #e6ecf7;
+    --muted: #8a98b6;
+    --accent: #5cc8ff;
+    --accent-2: #b388ff;
+    --plus: #5cc8ff;
+    --xbasis: #ffb86b;
+    --bit0: #6ee7a8;
+    --bit1: #ff7aa2;
+    --ok: #6ee7a8;
+    --warn: #ffd166;
+    --bad: #ff6b81;
+    --eve: #ff7aa2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { min-height: 100vh; padding: 24px; }
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;
+    gap: 16px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  header .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  header a { color: var(--accent); font-size: 13px; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+  }
+  .panel h2 { margin: 0 0 4px 0; font-size: 20px; }
+  .panel .phase-tag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 2px 10px; border-radius: 999px; margin-bottom: 8px;
+  }
+  .panel .phase-tag.A { background: rgba(92,200,255,0.15); color: var(--accent); }
+  .panel .phase-tag.B { background: rgba(179,136,255,0.15); color: var(--accent-2); }
+  .panel .phase-tag.C { background: rgba(255,209,102,0.15); color: var(--warn); }
+  .panel .phase-tag.D { background: rgba(110,231,168,0.15); color: var(--ok); }
+  .panel h3 { margin: 12px 0 6px 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .panel p { margin: 6px 0; line-height: 1.55; font-size: 14px; }
+  .panel p.muted { color: var(--muted); font-size: 13px; }
+
+  button {
+    background: var(--accent); color: #001828; border: none; border-radius: 8px;
+    padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+  button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  button.small { padding: 6px 10px; font-size: 12px; }
+
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .pill.plus { background: rgba(92,200,255,0.15); color: var(--plus); }
+  .pill.x { background: rgba(255,184,107,0.15); color: var(--xbasis); }
+
+  /* Round strip */
+  .strip-row { display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
+  .cell {
+    min-width: 38px; flex: 0 0 38px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 0;
+    text-align: center; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px; transition: all 0.25s;
+  }
+  .cell.head { background: transparent; border: none; color: var(--muted); font-size: 11px; padding: 6px 0; font-family: -apple-system, sans-serif; }
+  .cell.label { background: transparent; border: none; color: var(--muted); font-size: 12px; min-width: 100px; flex: 0 0 100px; text-align: left; padding-left: 6px; font-family: -apple-system, sans-serif; }
+  .cell.basis-plus { color: var(--plus); }
+  .cell.basis-x    { color: var(--xbasis); }
+  .cell.bit0       { color: var(--bit0); }
+  .cell.bit1       { color: var(--bit1); }
+  .cell.kept       { background: rgba(110,231,168,0.12); border-color: rgba(110,231,168,0.5); }
+  .cell.discard    { background: rgba(255,107,129,0.10); border-color: rgba(255,107,129,0.4); opacity: 0.45; text-decoration: line-through; }
+  .cell.test       { outline: 2px dashed var(--warn); outline-offset: -2px; }
+  .cell.test-bad   { background: rgba(255,107,129,0.30); border-color: var(--bad); }
+  .cell.hidden-val { color: var(--muted); }
+  /* Marker for random-measurement cells: dashed border + faint warning tint */
+  .cell.random-meas {
+    border: 1px dashed var(--warn);
+    background: rgba(255,209,102,0.10);
+    position: relative;
+  }
+  .cell.random-meas::after {
+    content: "?";
+    position: absolute; top: 0px; right: 3px;
+    font-size: 9px; color: var(--warn); font-weight: 700;
+    font-family: -apple-system, sans-serif;
+  }
+  .cell.det-meas {
+    border: 1px solid rgba(110,231,168,0.5);
+    background: rgba(110,231,168,0.06);
+  }
+  .meas-legend {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;
+    font-size: 11px; color: var(--muted);
+  }
+  .meas-legend .swatch {
+    display: inline-block; width: 14px; height: 14px; border-radius: 3px;
+    vertical-align: middle; margin-right: 4px;
+  }
+
+  /* Unified table: shared horizontal scroll, sticky row labels */
+  .unified-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .unified-table { display: flex; flex-direction: column; gap: 4px; min-width: max-content; }
+  .unified-row { display: flex; gap: 4px; align-items: center; }
+  .unified-row .cell.label {
+    position: sticky; left: 0; z-index: 2;
+    background: var(--bg-2);
+  }
+  .unified-row.alice-row .cell.label { color: var(--accent); }
+  .unified-row.bob-row   .cell.label { color: var(--accent-2); }
+  .unified-row.eve-row   .cell.label { color: var(--eve); }
+  .unified-group-separator {
+    height: 1px; background: var(--border); margin: 4px 0;
+  }
+
+  .strip-block {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px; margin-top: 8px;
+  }
+
+  /* Channel diagram */
+  .channel-diagram {
+    display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 12px; align-items: stretch;
+    margin-top: 12px;
+  }
+  .party {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px;
+  }
+  .party.alice { border-left: 3px solid var(--accent); }
+  .party.bob   { border-left: 3px solid var(--accent-2); }
+  .party h4 { margin: 0 0 6px 0; font-size: 13px; }
+  .channel {
+    background: rgba(255,209,102,0.06); border: 1px dashed var(--warn);
+    border-radius: 10px; padding: 12px; position: relative;
+  }
+  .channel h4 { margin: 0 0 6px 0; font-size: 13px; color: var(--warn); }
+  .eve-listener {
+    position: absolute; right: 10px; bottom: 10px;
+    background: rgba(255,122,162,0.15); border: 1px solid var(--eve);
+    border-radius: 999px; padding: 3px 10px; font-size: 11px; color: var(--eve); font-weight: 600;
+  }
+
+  .speech {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; margin-top: 6px; font-size: 13px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    max-height: 140px; overflow-y: auto;
+  }
+  .speech .line { margin: 2px 0; }
+  .speech .line.alice { color: var(--accent); }
+  .speech .line.bob   { color: var(--accent-2); }
+  .speech .line.eve   { color: var(--eve); font-style: italic; }
+
+  .step-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .progress {
+    flex: 1; min-width: 200px; height: 8px; background: var(--bg-2);
+    border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .progress > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.3s; }
+
+  .stat-tile {
+    display: inline-flex; flex-direction: column;
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; margin-right: 8px; margin-top: 6px;
+  }
+  .stat-tile .k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-tile .v { font-size: 18px; font-weight: 700; }
+
+  .toggle-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .toggle {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer;
+    user-select: none; color: var(--text); font-weight: 500;
+  }
+  .toggle .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+  .toggle.active .dot { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .toggle.active { border-color: var(--ok); }
+
+  .key-display {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--bg-2); padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--border); word-break: break-all; font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } .channel-diagram { grid-template-columns: 1fr; } }
+
+  footer { color: var(--muted); font-size: 11px; text-align: center; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div>
+      <h1>After the photons — sifting and error checks</h1>
+      <div class="sub">What Alice and Bob actually <em>say</em> to each other once the quantum transmission is over</div>
+    </div>
+    <div><a href="index.html">← back to main demo</a></div>
+  </header>
+
+  <!-- Top controls -->
+  <div class="panel">
+    <div class="toggle-row">
+      <button class="toggle" id="eveToggle"><span class="dot"></span><span>Run with Eve eavesdropping: <span id="eveLabel">off</span></span></button>
+      <button class="secondary small" id="reshuffleBtn">↻ Re-roll the 16 rounds</button>
+      <span style="flex:1;"></span>
+      <span class="muted" style="font-size: 12px; color: var(--muted);">Phases: <strong style="color: var(--accent);">A</strong> &nbsp;<strong style="color: var(--accent-2);">B</strong> &nbsp;<strong style="color: var(--warn);">C</strong> &nbsp;<strong style="color: var(--ok);">D</strong></span>
+    </div>
+  </div>
+
+  <!-- ===== PHASE A ===== -->
+  <div class="panel">
+    <div class="phase-tag A">Phase A · Quantum transmission</div>
+    <h2>The photons already flew</h2>
+    <p class="muted">We pre-rolled 16 rounds. Alice picked random bases &amp; random bits; for each, her λ/2 plate set a polarization and her photon flew to Bob. Bob picked random bases and recorded what his detectors read. Eve, if present, intercepted each photon, measured in her own random basis, then re-emitted toward Bob.</p>
+    <p class="muted">Right now, <em>only Alice can see her own bits, only Bob can see his own bits, and only Eve can see hers.</em> They have not communicated yet.</p>
+
+    <div class="strip-block">
+      <h3>All notebooks — one shared timeline (scroll horizontally to compare)</h3>
+      <div id="unifiedTable"></div>
+      <div class="meas-legend">
+        <span><span class="swatch" style="background: rgba(110,231,168,0.2); border: 1px solid rgba(110,231,168,0.5);"></span>deterministic measurement — basis matched incoming polarization</span>
+        <span><span class="swatch" style="background: rgba(255,209,102,0.18); border: 1px dashed var(--warn);"></span>random projection — basis didn't match, bit was a 50/50 coin flip</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE B: SIFTING ===== -->
+  <div class="panel">
+    <div class="phase-tag B">Phase B · Sifting (basis reconciliation)</div>
+    <h2>Alice and Bob compare bases — out loud, on a regular phone line</h2>
+    <p>This is the first time they communicate after the quantum part. They use a public, <em>authenticated</em> classical channel — think: a phone call where they recognize each other's voices. <strong>Eve can listen in.</strong></p>
+    <p class="muted">Critically: Alice and Bob announce only their <em>basis</em> for each round (+ or ×), <strong>never the bit values</strong>. They keep rounds where the bases matched, discard the rest. The kept bits become the <strong>sifted key</strong>.</p>
+
+    <div class="channel-diagram">
+      <div class="party alice">
+        <h4 style="color: var(--accent);">Alice</h4>
+        <div class="speech" id="aliceSpeech"></div>
+      </div>
+      <div class="channel">
+        <h4>Public channel · authenticated · unencrypted</h4>
+        <div class="speech" id="channelSpeech"></div>
+        <div class="eve-listener">Eve is listening</div>
+      </div>
+      <div class="party bob">
+        <h4 style="color: var(--accent-2);">Bob</h4>
+        <div class="speech" id="bobSpeech"></div>
+      </div>
+    </div>
+
+    <div class="step-controls">
+      <button id="siftStepBtn">Announce next round →</button>
+      <button class="secondary" id="siftAllBtn">Run all rounds</button>
+      <button class="secondary small" id="siftResetBtn">↻ Reset</button>
+      <div class="progress"><div id="siftProgBar" style="width:0%"></div></div>
+      <span style="color: var(--muted); font-size: 12px;" id="siftLabel">0 / 16</span>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <div class="stat-tile"><div class="k">Rounds sifted</div><div class="v" id="siftDone">0</div></div>
+      <div class="stat-tile"><div class="k">Same basis (kept)</div><div class="v" id="siftKept">0</div></div>
+      <div class="stat-tile"><div class="k">Different basis (discarded)</div><div class="v" id="siftDropped">0</div></div>
+    </div>
+
+    <div class="strip-block" style="margin-top: 14px;">
+      <h3>Sifting result</h3>
+      <div class="strip-row" id="siftResultRow"></div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 14px;">
+      <div class="strip-block">
+        <h3>Alice's sifted key</h3>
+        <div class="key-display" id="aliceSiftedKey">—</div>
+      </div>
+      <div class="strip-block">
+        <h3>Bob's sifted key</h3>
+        <div class="key-display" id="bobSiftedKey">—</div>
+      </div>
+    </div>
+
+    <div class="strip-block" id="eveSiftedBlock" style="margin-top: 14px; display: none;">
+      <h3 style="color: var(--eve);">What Eve learned from sifting</h3>
+      <div id="eveSiftedSummary" style="font-size: 13px; color: var(--muted); line-height: 1.55;"></div>
+    </div>
+
+    <p class="muted" style="margin-top: 14px;"><strong>Why is it safe to publicly announce bases?</strong> The photons are <em>gone</em>. Eve already had her one chance to measure them, before Alice and Bob spoke. Quantum measurement is destructive and one-shot — knowing the basis after the photons have flown doesn't let her go back and re-measure. For rounds where Eve guessed the right basis on her own, she already had the bit; for rounds where she guessed wrong, her measurement disturbed the photon (and may have given her gibberish), and no after-the-fact basis info recovers it.</p>
+  </div>
+
+  <!-- ===== PHASE C: ERROR ESTIMATION ===== -->
+  <div class="panel">
+    <div class="phase-tag C">Phase C · Error estimation (parameter estimation)</div>
+    <h2>Sacrifice some bits to check for Eve</h2>
+    <p>Now Alice and Bob have a sifted key. In a perfectly clean channel, their two copies should be <strong>identical</strong>. They check by sacrificing a random subset — Alice publicly announces some of her bits, Bob announces his values for the same indices, and they count disagreements.</p>
+    <p class="muted">If errors are zero (or close enough to the channel's expected noise floor), the channel is clean. If errors are too high — typically Eve's intercept-and-resend attack causes ~25% errors on sifted bits — they <strong>abort</strong> and discard the whole key. Bits announced here are sacrificed: Eve heard them too.</p>
+
+    <div class="step-controls">
+      <button id="testStepBtn" disabled>Run error estimation →</button>
+      <span style="color: var(--muted); font-size: 12px;">Will sacrifice ~half of the sifted bits as test bits.</span>
+    </div>
+
+    <div class="strip-block" style="margin-top: 12px;">
+      <h3>Sifted key with test bits highlighted</h3>
+      <div class="strip-row" id="testStripAlice"></div>
+      <div class="strip-row" id="testStripBob" style="margin-top: 4px;"></div>
+    </div>
+
+    <div style="margin-top: 12px;">
+      <div class="stat-tile"><div class="k">Test bits</div><div class="v" id="testCount">—</div></div>
+      <div class="stat-tile"><div class="k">Disagreements</div><div class="v" id="testErrors">—</div></div>
+      <div class="stat-tile"><div class="k">Error rate</div><div class="v" id="testRate">—</div></div>
+      <div class="stat-tile"><div class="k">Verdict</div><div class="v" id="testVerdict">—</div></div>
+    </div>
+
+    <div class="strip-block" style="margin-top: 12px;">
+      <h3>Remaining bits → final key (after error estimation)</h3>
+      <div class="key-display" id="finalKeyDisplay">—</div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE D: PRIVACY AMPLIFICATION ===== -->
+  <div class="panel">
+    <div class="phase-tag D">Phase D · Information reconciliation &amp; privacy amplification</div>
+    <h2>Polish the key — fix small errors, then squeeze out residual leakage</h2>
+    <p>In real BB84 over noisy channels, even a clean line has <em>some</em> errors (detector dark counts, slight misalignment, etc.). Alice and Bob can't tell error-from-noise from error-from-Eve, so they conservatively assume all the error is Eve, and treat the channel as if Eve has partial information.</p>
+
+    <p><strong>Information reconciliation</strong>: Alice and Bob publicly run an error-correcting code (e.g., CASCADE) to make their two copies of the key bit-identical. This <em>leaks some additional information to Eve</em> — they account for it in the next step.</p>
+
+    <p><strong>Privacy amplification</strong>: They apply a public hash function — typically a randomly-chosen function from a universal hash family — to compress the key from N bits to M bits, where M is chosen so that Eve's residual partial knowledge of the original N bits gives her negligible information about the M-bit hashed output. The shorter key is the <strong>final secret key</strong>.</p>
+
+    <p class="muted">A way to picture it: even if Eve knows 10% of the bits in your 100-bit string, hashing that string down to 50 bits with the right family of hashes makes Eve's knowledge of the 50-bit output exponentially small. The price is a shorter key. The benefit is that the <em>remaining</em> key really is secret, even accounting for everything Eve might have learned in earlier phases.</p>
+
+    <p class="muted">For our outreach demo, we stop at Phase C — Alice and Bob have a (small) sifted-and-checked key, and they use it directly to encrypt the message via one-time-pad XOR. Real systems do all four phases.</p>
+  </div>
+
+  <footer>Companion to <a href="index.html" style="color: var(--accent);">main demo</a> and <a href="eve_cases.html" style="color: var(--accent);">eve_cases.html</a>.</footer>
+
+</div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+
+const N_ROUNDS = 16;
+const state = {
+  eveOn: false,
+  rounds: [],
+  siftStep: 0,
+  siftDone: false,
+  testDone: false,
+};
+
+function rand6() { return 1 + Math.floor(Math.random() * 6); }
+function rand8() { return 1 + Math.floor(Math.random() * 8); }
+function basisFromD6(n) { return (n % 2 === 1) ? "+" : "x"; }
+function bitFromD8(n)   { return (n <= 4) ? 0 : 1; }
+
+function measureBob(incBasis, incBit, bobBasis) {
+  if (incBasis === bobBasis) return incBit;
+  return Math.random() < 0.5 ? 0 : 1;
+}
+function measureEve(aliceBasis, aliceBit, eveBasis) {
+  if (eveBasis === aliceBasis) return aliceBit;
+  return Math.random() < 0.5 ? 0 : 1;
+}
+
+function rollRounds() {
+  state.rounds = [];
+  for (let i = 0; i < N_ROUNDS; i++) {
+    const aliceBasis = basisFromD6(rand6());
+    const aliceBit   = bitFromD8(rand8());
+    const bobBasis   = basisFromD6(rand6());
+    let eveBasis = null, eveBit = null, incBasis = aliceBasis, incBit = aliceBit;
+    if (state.eveOn) {
+      eveBasis = basisFromD6(rand6());
+      eveBit = measureEve(aliceBasis, aliceBit, eveBasis);
+      incBasis = eveBasis;
+      incBit = eveBit;
+    }
+    const bobBit = measureBob(incBasis, incBit, bobBasis);
+    state.rounds.push({ aliceBasis, aliceBit, bobBasis, bobBit, eveBasis, eveBit, sameBasis: aliceBasis === bobBasis });
+  }
+  state.siftStep = 0;
+  state.siftDone = false;
+  state.testDone = false;
+  renderAll();
+}
+
+function basisCellHTML(b) {
+  return b === "+" ? '<span class="pill plus">+</span>' : '<span class="pill x">×</span>';
+}
+
+function makeCell(content, classes = "") {
+  const d = document.createElement("div");
+  d.className = "cell " + classes;
+  d.innerHTML = content;
+  return d;
+}
+
+function renderHeaderRow(rowEl) {
+  rowEl.innerHTML = "";
+  rowEl.appendChild(makeCell("#", "label"));
+  for (let i = 0; i < N_ROUNDS; i++) rowEl.appendChild(makeCell(i+1, "head"));
+}
+
+function renderNotebookStrip(rowEl, label, getBasis, getBit, basisHidden = false, bitHidden = false) {
+  rowEl.innerHTML = "";
+  // Header
+  const header = document.createElement("div");
+  header.className = "strip-row";
+  header.style.marginBottom = "4px";
+  // We'll render label + bits + label + basis as 3 separate rows actually.
+}
+
+// Was this measurement deterministic or random?
+// Returns "det" if measurement basis matches incoming polarization basis, "rnd" otherwise.
+// `who` ∈ {"alice", "eve", "bob"}. Alice never measures (she prepares), so "det" always.
+function measurementKind(round, who) {
+  if (who === "alice") return "det";
+  if (who === "eve") {
+    return round.eveBasis === round.aliceBasis ? "det" : "rnd";
+  }
+  // Bob: incoming basis is Alice's (if no Eve) or Eve's (if Eve on)
+  const incomingBasis = state.eveOn ? round.eveBasis : round.aliceBasis;
+  return round.bobBasis === incomingBasis ? "det" : "rnd";
+}
+
+// Render unified Phase A notebook: one table with all parties stacked, shared
+// horizontal scroll, sticky row labels.
+function renderNotebooks() {
+  const container = $("unifiedTable");
+  container.innerHTML = "";
+  const scroll = document.createElement("div"); scroll.className = "unified-scroll";
+  const table = document.createElement("div"); table.className = "unified-table";
+  scroll.appendChild(table);
+  container.appendChild(scroll);
+
+  const addRow = (labelHTML, rowClass, fillFn) => {
+    const r = document.createElement("div");
+    r.className = "unified-row " + (rowClass || "");
+    const lab = makeCell(labelHTML, "label"); r.appendChild(lab);
+    for (let i = 0; i < N_ROUNDS; i++) r.appendChild(fillFn(i));
+    table.appendChild(r);
+  };
+  const addSeparator = () => {
+    const s = document.createElement("div"); s.className = "unified-group-separator";
+    table.appendChild(s);
+  };
+
+  // Header row: round numbers
+  addRow("Round #", "", (i) => makeCell(i+1, "head"));
+  addSeparator();
+
+  // ---- Alice ----
+  addRow("Alice basis", "alice-row", (i) => {
+    const b = state.rounds[i].aliceBasis;
+    return makeCell(b === "+" ? "+" : "×", b === "+" ? "basis-plus" : "basis-x");
+  });
+  addRow("Alice bit", "alice-row", (i) => {
+    const v = state.rounds[i].aliceBit;
+    return makeCell(String(v), v === 0 ? "bit0" : "bit1");
+  });
+
+  // ---- Eve (only if on) ----
+  if (state.eveOn) {
+    addSeparator();
+    addRow("Eve basis", "eve-row", (i) => {
+      const b = state.rounds[i].eveBasis;
+      return makeCell(b === "+" ? "+" : "×", b === "+" ? "basis-plus" : "basis-x");
+    });
+    addRow("Eve bit", "eve-row", (i) => {
+      const v = state.rounds[i].eveBit;
+      const kind = measurementKind(state.rounds[i], "eve");
+      const measClass = kind === "rnd" ? "random-meas" : "det-meas";
+      return makeCell(String(v), `${v === 0 ? "bit0" : "bit1"} ${measClass}`);
+    });
+  }
+
+  // ---- Bob ----
+  addSeparator();
+  addRow("Bob basis", "bob-row", (i) => {
+    const b = state.rounds[i].bobBasis;
+    return makeCell(b === "+" ? "+" : "×", b === "+" ? "basis-plus" : "basis-x");
+  });
+  addRow("Bob bit", "bob-row", (i) => {
+    const v = state.rounds[i].bobBit;
+    const kind = measurementKind(state.rounds[i], "bob");
+    const measClass = kind === "rnd" ? "random-meas" : "det-meas";
+    return makeCell(String(v), `${v === 0 ? "bit0" : "bit1"} ${measClass}`);
+  });
+}
+
+// Phase B: sifting playback
+function renderSiftingResultRow() {
+  const row = $("siftResultRow");
+  row.innerHTML = "";
+  // 3 stacked rows actually — we'll render: round, alice basis, bob basis, kept?, alice bit (sifted), bob bit (sifted)
+  const buildRow = (label, fn, suffix = "") => {
+    const r = document.createElement("div"); r.className = "strip-row"; r.style.marginTop = suffix ? "4px" : "0";
+    r.appendChild(makeCell(label, "label"));
+    for (let i = 0; i < N_ROUNDS; i++) r.appendChild(fn(i));
+    row.appendChild(r);
+  };
+  buildRow("Round #", (i) => makeCell(i+1, "head"));
+  buildRow("Alice basis", (i) => {
+    const b = state.rounds[i].aliceBasis;
+    const cls = (i < state.siftStep) ? (state.rounds[i].sameBasis ? "kept" : "discard") : "";
+    return makeCell(b === "+" ? "+" : "×", (b === "+" ? "basis-plus " : "basis-x ") + cls);
+  }, "y");
+  buildRow("Bob basis", (i) => {
+    const b = state.rounds[i].bobBasis;
+    const cls = (i < state.siftStep) ? (state.rounds[i].sameBasis ? "kept" : "discard") : "";
+    return makeCell(b === "+" ? "+" : "×", (b === "+" ? "basis-plus " : "basis-x ") + cls);
+  }, "y");
+  buildRow("Keep?", (i) => {
+    if (i >= state.siftStep) return makeCell("·", "");
+    return makeCell(state.rounds[i].sameBasis ? "✓" : "✗", state.rounds[i].sameBasis ? "kept" : "discard");
+  }, "y");
+  buildRow("Alice bit", (i) => {
+    if (i >= state.siftStep) return makeCell("·", "hidden-val");
+    if (!state.rounds[i].sameBasis) return makeCell("—", "discard");
+    const v = state.rounds[i].aliceBit;
+    return makeCell(String(v), (v === 0 ? "bit0 " : "bit1 ") + "kept");
+  }, "y");
+  buildRow("Bob bit", (i) => {
+    if (i >= state.siftStep) return makeCell("·", "hidden-val");
+    if (!state.rounds[i].sameBasis) return makeCell("—", "discard");
+    const v = state.rounds[i].bobBit;
+    const kind = measurementKind(state.rounds[i], "bob");
+    const measClass = kind === "rnd" ? "random-meas" : "det-meas";
+    return makeCell(String(v), `${v === 0 ? "bit0" : "bit1"} kept ${measClass}`);
+  }, "y");
+}
+
+function appendSpeech(elId, cls, text) {
+  const el = $(elId);
+  const line = document.createElement("div"); line.className = "line " + cls; line.textContent = text;
+  el.appendChild(line); el.scrollTop = el.scrollHeight;
+}
+function clearSpeech() {
+  ["aliceSpeech","bobSpeech","channelSpeech"].forEach(id => $(id).innerHTML = "");
+}
+
+function siftOneRound() {
+  if (state.siftStep >= N_ROUNDS) return;
+  const i = state.siftStep;
+  const r = state.rounds[i];
+  // Speech
+  appendSpeech("aliceSpeech", "alice", `R${i+1}: I used ${r.aliceBasis === "+" ? "+" : "×"}`);
+  appendSpeech("channelSpeech", "alice", `Alice → R${i+1}: ${r.aliceBasis === "+" ? "+" : "×"}`);
+  appendSpeech("bobSpeech", "bob", `R${i+1}: I used ${r.bobBasis === "+" ? "+" : "×"} → ${r.sameBasis ? "keep ✓" : "discard ✗"}`);
+  appendSpeech("channelSpeech", "bob", `Bob → R${i+1}: ${r.bobBasis === "+" ? "+" : "×"} (${r.sameBasis ? "keep" : "discard"})`);
+  state.siftStep++;
+  if (state.siftStep === N_ROUNDS) {
+    state.siftDone = true;
+    appendSpeech("channelSpeech", "eve", `[Eve overheard the entire basis sequence — but no bits.]`);
+    $("testStepBtn").disabled = false;
+  }
+  updateSiftUI();
+}
+
+function updateSiftUI() {
+  $("siftDone").textContent = state.siftStep;
+  const sifted = state.rounds.slice(0, state.siftStep);
+  const kept = sifted.filter(r => r.sameBasis).length;
+  const dropped = sifted.length - kept;
+  $("siftKept").textContent = kept;
+  $("siftDropped").textContent = dropped;
+  $("siftLabel").textContent = `${state.siftStep} / ${N_ROUNDS}`;
+  $("siftProgBar").style.width = (state.siftStep / N_ROUNDS * 100) + "%";
+
+  const aliceKey = sifted.filter(r => r.sameBasis).map(r => r.aliceBit).join("");
+  const bobKey   = sifted.filter(r => r.sameBasis).map(r => r.bobBit).join("");
+  $("aliceSiftedKey").textContent = aliceKey || "—";
+  $("bobSiftedKey").textContent = bobKey || "—";
+
+  renderSiftingResultRow();
+
+  // Eve's residual knowledge
+  if (state.eveOn) {
+    $("eveSiftedBlock").style.display = "";
+    if (state.siftStep === 0) {
+      $("eveSiftedSummary").innerHTML = "Listening on the public channel. So far, nothing announced.";
+    } else {
+      const fullSifted = state.rounds.filter(r => r.sameBasis);
+      const eveCorrectGuesses = fullSifted.filter(r => r.eveBasis === r.aliceBasis).length;
+      const totalKept = fullSifted.length;
+      $("eveSiftedSummary").innerHTML = `Eve heard the basis sequence and noted which rounds Alice &amp; Bob kept. Of the <strong>${totalKept}</strong> kept rounds, Eve happened to guess the right basis on <strong>${eveCorrectGuesses}</strong> — for those, she has the bit. For the other <strong>${totalKept - eveCorrectGuesses}</strong>, her bit is gibberish (50/50 random) and the photon she sent to Bob was already corrupted. Knowing the basis sequence <em>now</em> doesn't help: the photons are gone and she can't re-measure.`;
+    }
+  } else {
+    $("eveSiftedBlock").style.display = "none";
+  }
+}
+
+// Phase C: error estimation
+function runErrorEstimation() {
+  if (!state.siftDone || state.testDone) return;
+  state.testDone = true;
+  const sifted = state.rounds.map((r, i) => ({ r, i })).filter(o => o.r.sameBasis);
+  // Test bits = roughly half the sifted bits, randomly chosen
+  const half = Math.ceil(sifted.length / 2);
+  const idxs = sifted.map((_, k) => k);
+  // Shuffle
+  for (let k = idxs.length - 1; k > 0; k--) {
+    const j = Math.floor(Math.random() * (k+1));
+    [idxs[k], idxs[j]] = [idxs[j], idxs[k]];
+  }
+  const testIdxs = new Set(idxs.slice(0, half));
+  const tested = [], remaining = [];
+  sifted.forEach((o, k) => { if (testIdxs.has(k)) tested.push(o); else remaining.push(o); });
+  const errors = tested.filter(o => o.r.aliceBit !== o.r.bobBit).length;
+  const rate = errors / tested.length;
+  $("testCount").textContent = tested.length;
+  $("testErrors").textContent = errors;
+  $("testRate").textContent = (rate * 100).toFixed(0) + "%";
+  if (errors === 0) {
+    $("testVerdict").innerHTML = '<span style="color: var(--ok);">channel clean ✓</span>';
+  } else if (rate < 0.10) {
+    $("testVerdict").innerHTML = '<span style="color: var(--warn);">low — likely noise</span>';
+  } else {
+    $("testVerdict").innerHTML = '<span style="color: var(--bad);">eavesdropper — abort!</span>';
+  }
+
+  // Render test strip
+  const buildTestStrip = (rowEl, getBit, kind) => {
+    rowEl.innerHTML = "";
+    rowEl.appendChild(makeCell(kind, "label"));
+    sifted.forEach((o, k) => {
+      const isTest = testIdxs.has(k);
+      const v = getBit(o.r);
+      const mismatch = isTest && (o.r.aliceBit !== o.r.bobBit);
+      let cls = (v === 0 ? "bit0 " : "bit1 ") + (isTest ? "test " : "kept ") + (mismatch ? "test-bad" : "");
+      rowEl.appendChild(makeCell(String(v), cls));
+    });
+  };
+  buildTestStrip($("testStripAlice"), r => r.aliceBit, "Alice (test bits dashed)");
+  buildTestStrip($("testStripBob"),   r => r.bobBit,   "Bob");
+
+  // Final key = remaining (non-test) sifted bits
+  const finalKey = remaining.map(o => o.r.aliceBit).join("");
+  $("finalKeyDisplay").textContent = finalKey || "(all bits were sacrificed as test bits — try again with more rounds)";
+}
+
+// ---- Wire up ----
+function renderAll() {
+  renderNotebooks();
+  clearSpeech();
+  $("siftDone").textContent = "0";
+  $("siftKept").textContent = "0";
+  $("siftDropped").textContent = "0";
+  $("siftLabel").textContent = `0 / ${N_ROUNDS}`;
+  $("siftProgBar").style.width = "0%";
+  $("aliceSiftedKey").textContent = "—";
+  $("bobSiftedKey").textContent   = "—";
+  renderSiftingResultRow();
+  $("testStepBtn").disabled = true;
+  $("testCount").textContent = "—";
+  $("testErrors").textContent = "—";
+  $("testRate").textContent = "—";
+  $("testVerdict").textContent = "—";
+  $("testStripAlice").innerHTML = ""; $("testStripBob").innerHTML = "";
+  $("finalKeyDisplay").textContent = "—";
+  if (state.eveOn) {
+    $("eveSiftedBlock").style.display = "";
+    $("eveSiftedSummary").textContent = "Listening on the public channel. Step through sifting to see what she learns.";
+  } else {
+    $("eveSiftedBlock").style.display = "none";
+  }
+}
+
+$("eveToggle").addEventListener("click", () => {
+  state.eveOn = !state.eveOn;
+  $("eveToggle").classList.toggle("active", state.eveOn);
+  $("eveLabel").textContent = state.eveOn ? "ON" : "off";
+  rollRounds();
+});
+$("reshuffleBtn").addEventListener("click", () => rollRounds());
+$("siftStepBtn").addEventListener("click", () => siftOneRound());
+$("siftAllBtn").addEventListener("click", () => {
+  let i = setInterval(() => {
+    if (state.siftStep >= N_ROUNDS) { clearInterval(i); return; }
+    siftOneRound();
+  }, 220);
+});
+$("siftResetBtn").addEventListener("click", () => {
+  state.siftStep = 0; state.siftDone = false; state.testDone = false;
+  renderAll();
+});
+$("testStepBtn").addEventListener("click", () => runErrorEstimation());
+
+// init
+rollRounds();
+</script>
+</body>
+</html>

@@ -1,0 +1,1440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BB84 Quantum Key Distribution — BAA Outreach Demo</title>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --bg-2: #121828;
+    --panel: #182135;
+    --panel-2: #1f2a44;
+    --border: #2c3a5c;
+    --text: #e6ecf7;
+    --muted: #8a98b6;
+    --accent: #5cc8ff;
+    --accent-2: #b388ff;
+    --plus: #5cc8ff;
+    --xbasis: #ffb86b;
+    --bit0: #6ee7a8;
+    --bit1: #ff7aa2;
+    --ok: #6ee7a8;
+    --warn: #ffd166;
+    --bad: #ff6b81;
+    --eve: #ff7aa2;
+    --beam: #b388ff;     /* 405 nm-ish violet */
+    --beam-eve: #ff7aa2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { min-height: 100vh; padding: 24px; }
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;
+    gap: 16px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  header .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+  }
+  .panel h2 { margin: 0 0 12px 0; font-size: 18px; }
+  .panel h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .col { flex: 1 1 0; min-width: 280px; }
+
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input[type="text"], input[type="number"] {
+    background: var(--bg-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    font-size: 14px; font-family: inherit; letter-spacing: 0.04em;
+  }
+  input[type="text"] { width: 100%; padding: 10px 12px; font-size: 16px; }
+  input[type="number"] { width: 70px; text-align: center; }
+  input[type="text"]:focus, input[type="number"]:focus { outline: none; border-color: var(--accent); }
+  input.invalid { border-color: var(--bad); }
+
+  button {
+    background: var(--accent); color: #001828; border: none; border-radius: 8px;
+    padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+  button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  button.small { padding: 6px 10px; font-size: 12px; }
+  button.big { padding: 12px 20px; font-size: 15px; }
+
+  .eve-toggle {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px;
+    cursor: pointer; user-select: none; color: var(--text);
+    font-family: inherit; font-weight: 500;
+  }
+  .eve-toggle .dot {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--muted);
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .eve-toggle.active .dot { background: var(--eve); box-shadow: 0 0 12px var(--eve); }
+  .eve-toggle.active { border-color: var(--eve); color: var(--eve); }
+
+  /* Dice */
+  .dice-area { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; margin-top: 8px; }
+  .die-block { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 130px; }
+  .die-label { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.3; }
+  .die {
+    width: 70px; height: 70px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; font-weight: 700;
+    border: 2px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    user-select: none;
+  }
+  .die.red { background: linear-gradient(135deg, #c62828, #8b1e1e); color: #fff; }
+  .die.black { background: linear-gradient(135deg, #2a2a2a, #0a0a0a); color: #fff; }
+  .die.rolling { animation: shake 0.5s ease-in-out; }
+  @keyframes shake {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-15deg) scale(1.1); }
+    50% { transform: rotate(15deg) scale(0.95); }
+    75% { transform: rotate(-8deg) scale(1.05); }
+  }
+  .die-result { font-size: 12px; font-weight: 600; min-height: 16px; text-align: center; }
+  .die-row { display: flex; gap: 6px; align-items: center; }
+  .die-row input[type="number"] { width: 55px; padding: 6px 6px; }
+
+  /* Polarization legend */
+  .pol-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: stretch; margin-top: 16px; }
+  .pol-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; flex: 1 1 220px; min-width: 220px;
+  }
+  .pol-card h4 { margin: 0 0 10px 0; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .pol-svg { display: block; margin: 0 auto; }
+  .pol-caption { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  /* Optical schematic */
+  .schematic-wrap {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; margin-bottom: 16px; overflow-x: auto;
+  }
+  .schematic-wrap svg { display: block; min-width: 900px; width: 100%; height: auto; }
+
+  /* Bit table */
+  .bit-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .bit-table th, .bit-table td {
+    padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border);
+    min-width: 26px;
+  }
+  .bit-table th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .bit-table .label-col { text-align: left; padding-left: 8px; color: var(--muted); white-space: nowrap; }
+  .bit-table td.same { background: rgba(110,231,168,0.08); }
+  .bit-table td.diff { background: rgba(255,107,129,0.06); }
+  .bit-table td.test-bad { background: rgba(255,107,129,0.25); }
+  .badge-plus { color: var(--plus); font-weight: 700; }
+  .badge-x { color: var(--xbasis); font-weight: 700; }
+  .bit0 { color: var(--bit0); font-weight: 600; }
+  .bit1 { color: var(--bit1); font-weight: 600; }
+  .scroll-x { overflow-x: auto; }
+
+  .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .stat {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; min-width: 120px;
+  }
+  .stat .v { font-size: 20px; font-weight: 700; }
+  .stat .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .step-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .progress {
+    flex: 1; min-width: 200px; height: 8px; background: var(--bg-2);
+    border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .progress > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.2s; }
+
+  /* Message bit progress strip */
+  .msg-strip { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+  .msg-letter { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .msg-letter .ch {
+    font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: 0.04em;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  .msg-letter .bits { display: flex; gap: 3px; }
+  .msg-letter .bits .b {
+    width: 22px; height: 22px; border-radius: 4px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--muted); transition: all 0.2s;
+  }
+  .msg-letter .bits .b.filled.bit0 { background: rgba(110,231,168,0.25); border-color: var(--bit0); color: var(--bit0); }
+  .msg-letter .bits .b.filled.bit1 { background: rgba(255,122,162,0.25); border-color: var(--bit1); color: var(--bit1); }
+
+  .alice-bg { border-left: 3px solid var(--accent); }
+  .bob-bg { border-left: 3px solid var(--accent-2); }
+
+  .outcome {
+    font-size: 14px; padding: 10px 14px; border-radius: 8px; margin-top: 12px;
+    background: var(--bg-2); border: 1px solid var(--border);
+  }
+  .outcome.same-basis { border-color: var(--ok); }
+  .outcome.diff-basis { border-color: var(--warn); }
+  .outcome.eve-active { border-color: var(--eve); }
+
+  code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .key-display {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--bg-2); padding: 12px; border-radius: 8px;
+    border: 1px solid var(--border); word-break: break-all; font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .pill.plus { background: rgba(92,200,255,0.15); color: var(--plus); }
+  .pill.x { background: rgba(255,184,107,0.15); color: var(--xbasis); }
+  .pill.eve { background: rgba(255,122,162,0.15); color: var(--eve); }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  .auto-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+
+  .hidden { display: none !important; }
+
+  footer { color: var(--muted); font-size: 11px; text-align: center; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div>
+      <h1>BB84 — Quantum Key Distribution</h1>
+      <div class="sub">Buffalo Astronomical Association · Outreach Demo</div>
+    </div>
+    <div>
+      <button type="button" class="eve-toggle" id="eveToggle" aria-pressed="false">
+        <span class="dot"></span>
+        <span>Eve eavesdropping: <span id="eveStateLabel">off</span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Polarization legend -->
+  <div class="panel">
+    <h2>Polarization basics</h2>
+    <p class="hint" style="margin-top:0;">Light is a transverse electromagnetic wave — its electric field can oscillate along any direction perpendicular to travel. BB84 uses two pairs of polarization directions, called <em>bases</em>. Within a basis, two perpendicular orientations encode bit 0 and bit 1.</p>
+    <div class="pol-row">
+      <div class="pol-card">
+        <h4><span class="badge-plus">+</span> basis (rectilinear)</h4>
+        <svg class="pol-svg" viewBox="0 0 200 130" width="200" height="130">
+          <defs>
+            <marker id="arrA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--bit0)"/></marker>
+            <marker id="arrB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--bit1)"/></marker>
+          </defs>
+          <circle cx="60" cy="65" r="40" fill="none" stroke="var(--border)" stroke-dasharray="3 3"/>
+          <line x1="20" y1="65" x2="100" y2="65" stroke="var(--bit0)" stroke-width="3" marker-start="url(#arrA)" marker-end="url(#arrA)"/>
+          <text x="60" y="120" text-anchor="middle" fill="var(--bit0)" font-size="11" font-weight="600">0° → bit 0</text>
+          <circle cx="160" cy="65" r="40" fill="none" stroke="var(--border)" stroke-dasharray="3 3"/>
+          <line x1="160" y1="25" x2="160" y2="105" stroke="var(--bit1)" stroke-width="3" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+          <text x="160" y="120" text-anchor="middle" fill="var(--bit1)" font-size="11" font-weight="600">90° → bit 1</text>
+        </svg>
+        <div class="pol-caption">Horizontal &amp; vertical polarization</div>
+      </div>
+      <div class="pol-card">
+        <h4><span class="badge-x">×</span> basis (diagonal)</h4>
+        <svg class="pol-svg" viewBox="0 0 200 130" width="200" height="130">
+          <defs>
+            <marker id="arrC" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--bit0)"/></marker>
+            <marker id="arrD" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--bit1)"/></marker>
+          </defs>
+          <circle cx="60" cy="65" r="40" fill="none" stroke="var(--border)" stroke-dasharray="3 3"/>
+          <line x1="32" y1="93" x2="88" y2="37" stroke="var(--bit0)" stroke-width="3" marker-start="url(#arrC)" marker-end="url(#arrC)"/>
+          <text x="60" y="120" text-anchor="middle" fill="var(--bit0)" font-size="11" font-weight="600">−45° → bit 0</text>
+          <circle cx="160" cy="65" r="40" fill="none" stroke="var(--border)" stroke-dasharray="3 3"/>
+          <line x1="132" y1="37" x2="188" y2="93" stroke="var(--bit1)" stroke-width="3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+          <text x="160" y="120" text-anchor="middle" fill="var(--bit1)" font-size="11" font-weight="600">+45° → bit 1</text>
+        </svg>
+        <div class="pol-caption">Diagonal &amp; anti-diagonal polarization</div>
+      </div>
+    </div>
+    <p class="hint" style="margin-top: 12px;">A polarizing beamsplitter perfectly distinguishes the two states <em>within one basis</em>. Measure a +basis photon with a ×basis analyzer and the result is 50/50 random — the photon is forced to "choose." That randomness is what makes eavesdropping detectable.</p>
+  </div>
+
+
+  <!-- Step 1: Message -->
+  <div class="panel" id="msgPanel">
+    <h2>1 · Choose a message</h2>
+    <div class="row">
+      <div class="col" style="flex: 2 1 0;">
+        <label for="messageInput">Enter a short word or phrase (letters A–Z, max 8 characters)</label>
+        <input id="messageInput" type="text" maxlength="8" placeholder="e.g. STARS" autocomplete="off" />
+        <div class="hint">Each letter is encoded as 5 bits (A = 00000, B = 00001, ..., Z = 11001). About half of the raw bits are discarded (when Alice and Bob roll different bases), so we'll need roughly 2× the message length in raw rounds.</div>
+        <div id="encodeExample" class="hidden" style="margin-top: 12px;">
+          <h3 style="margin: 0 0 6px 0;">Your message in 5-bit code</h3>
+          <div id="encodeExampleStrip" style="display: flex; gap: 14px; flex-wrap: wrap;"></div>
+        </div>
+      </div>
+      <div class="col">
+        <label>&nbsp;</label>
+        <button id="startBtn" disabled>Start key generation →</button>
+        <div class="hint" id="startHint"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message progress strip -->
+  <div class="panel hidden" id="progressPanel">
+    <h2>Message progress</h2>
+    <p class="hint" style="margin-top:0;">Each letter is 5 bits. Cells light up as the sifted key grows long enough to encrypt them.</p>
+    <div class="msg-strip" id="msgStrip"></div>
+  </div>
+
+  <!-- Step 2: Generate bits -->
+  <div class="panel hidden" id="genPanel">
+    <h2>2 · Generate raw bits, one round at a time</h2>
+
+    <!-- Optical schematic (live) -->
+    <div class="schematic-wrap">
+      <svg id="schematic" viewBox="0 0 1300 280" width="100%" height="280">
+        <defs>
+          <marker id="beamArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--beam)"/></marker>
+          <marker id="polArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker>
+        </defs>
+
+        <!-- Region labels (drawn first so they sit underneath) -->
+        <text x="130" y="245" text-anchor="middle" fill="var(--accent)" font-size="12" font-weight="600">ALICE (sender)</text>
+        <line x1="20" y1="225" x2="240" y2="225" stroke="var(--accent)" stroke-width="1" opacity="0.4"/>
+        <text x="610" y="245" text-anchor="middle" fill="var(--eve)" font-size="12" font-weight="600" id="eveRegionLabel" opacity="0">EVE (intercept &amp; resend)</text>
+        <line id="eveRegionLine" x1="450" y1="225" x2="770" y2="225" stroke="var(--eve)" stroke-width="1" opacity="0"/>
+        <text x="1090" y="245" text-anchor="middle" fill="var(--accent-2)" font-size="12" font-weight="600">BOB (receiver)</text>
+        <line x1="940" y1="225" x2="1240" y2="225" stroke="var(--accent-2)" stroke-width="1" opacity="0.4"/>
+
+        <!-- ===== BEAM SEGMENTS ===== -->
+        <!-- Laser → Alice HWP -->
+        <line x1="60" y1="140" x2="160" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)"/>
+        <!-- Alice HWP → (toward Eve receiver, OR all the way to Bob HWP) -->
+        <line id="beam_alice_to_eve" x1="200" y1="140" x2="465" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)" opacity="0"/>
+        <line id="beam_alice_to_bob" x1="200" y1="140" x2="930" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)" opacity="1"/>
+
+        <!-- Eve internal: HWP → PBS -->
+        <line id="beam_eveHwp_pbs" x1="500" y1="140" x2="540" y2="140" stroke="var(--eve)" stroke-width="2.5" opacity="0"/>
+        <!-- Eve PBS → det0 (straight) -->
+        <line id="beam_evePbs_det0" x1="560" y1="140" x2="610" y2="140" stroke="var(--eve)" stroke-width="2.5" opacity="0"/>
+        <!-- Eve PBS → det1 (up) -->
+        <line id="beam_evePbs_det1" x1="550" y1="130" x2="550" y2="80" stroke="var(--eve)" stroke-width="2.5" opacity="0"/>
+        <!-- Eve resend laser → HWP -->
+        <line id="beam_eveResend_hwp" x1="660" y1="140" x2="710" y2="140" stroke="var(--eve)" stroke-width="2.5" marker-end="url(#beamArrow)" opacity="0"/>
+        <!-- Eve HWP → Bob HWP -->
+        <line id="beam_eve_to_bob" x1="730" y1="140" x2="930" y2="140" stroke="var(--eve)" stroke-width="2.5" marker-end="url(#beamArrow)" opacity="0"/>
+
+        <!-- Bob HWP → PBS -->
+        <line x1="970" y1="140" x2="1030" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)"/>
+        <!-- Bob PBS → det0 (straight) -->
+        <line id="beam_bobPbs_det0" x1="1050" y1="140" x2="1110" y2="140" stroke="var(--beam)" stroke-width="2.5" opacity="0"/>
+        <!-- Bob PBS → det1 (up) -->
+        <line id="beam_bobPbs_det1" x1="1040" y1="130" x2="1040" y2="80" stroke="var(--beam)" stroke-width="2.5" opacity="0"/>
+
+        <!-- ===== ALICE SECTION ===== -->
+        <!-- Basis-tinted backdrop + big badge -->
+        <rect id="aliceBasisBg" x="155" y="35" width="50" height="180" rx="8" fill="transparent" stroke="none"/>
+        <g id="aliceBasisBadge" opacity="0">
+          <circle cx="180" cy="55" r="18" fill="var(--bg)" stroke="var(--plus)" stroke-width="2"/>
+          <text id="aliceBasisBadgeText" x="180" y="63" text-anchor="middle" font-size="24" font-weight="700" fill="var(--plus)">+</text>
+        </g>
+        <g>
+          <rect x="20" y="125" width="40" height="30" rx="4" fill="#3a1818" stroke="var(--bad)"/>
+          <circle cx="55" cy="140" r="3" fill="var(--beam)"/>
+          <text x="40" y="180" text-anchor="middle" fill="var(--muted)" font-size="11">405 nm laser</text>
+        </g>
+        <g id="aliceHWP">
+          <circle cx="180" cy="140" r="20" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+          <line id="aliceHWPaxis" x1="160" y1="140" x2="200" y2="140" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="180" y="110" text-anchor="middle" fill="var(--accent)" font-size="11" font-weight="600">Alice λ/2</text>
+          <text x="180" y="180" text-anchor="middle" fill="var(--muted)" font-size="10" id="aliceHWPlabel">— —</text>
+        </g>
+
+        <!-- Polarization indicator: Alice's transmitted photon -->
+        <g id="travelPol1" opacity="0">
+          <circle cx="300" cy="140" r="18" fill="var(--bg)" stroke="var(--border)" stroke-dasharray="2 2"/>
+          <line id="travelArrow1" x1="285" y1="140" x2="315" y2="140" stroke="var(--bit0)" stroke-width="2.5" stroke-linecap="round" marker-start="url(#polArrow)" marker-end="url(#polArrow)" color="var(--bit0)"/>
+          <text x="300" y="180" text-anchor="middle" fill="var(--muted)" font-size="10" id="travelLabel1">photon</text>
+        </g>
+
+        <!-- ===== EVE SECTION (full mini Bob+Alice, only visible when Eve on) ===== -->
+        <g id="eveModule" opacity="0">
+          <rect x="450" y="60" width="320" height="160" rx="6" fill="rgba(255,122,162,0.04)" stroke="var(--eve)" stroke-dasharray="4 3"/>
+
+          <!-- Basis backdrops + badges for Eve receiver and sender -->
+          <rect id="eveBasisBg" x="455" y="85" width="170" height="125" rx="8" fill="transparent" stroke="none"/>
+          <g id="eveBasisBadge" opacity="0">
+            <circle cx="540" cy="100" r="16" fill="var(--bg)" stroke="var(--plus)" stroke-width="2"/>
+            <text id="eveBasisBadgeText" x="540" y="107" text-anchor="middle" font-size="22" font-weight="700" fill="var(--plus)">+</text>
+          </g>
+
+          <!-- Eve receiver = mirror of Bob -->
+          <text x="525" y="78" text-anchor="middle" fill="var(--eve)" font-size="11" font-weight="600" opacity="0.85">Eve receiver</text>
+          <!-- Eve λ/2 -->
+          <g>
+            <circle cx="480" cy="140" r="20" fill="var(--panel)" stroke="var(--eve)" stroke-width="2"/>
+            <line id="eveHWPaxisIn" x1="460" y1="140" x2="500" y2="140" stroke="var(--eve)" stroke-width="2" stroke-dasharray="3 2"/>
+            <text x="480" y="110" text-anchor="middle" fill="var(--eve)" font-size="11" font-weight="600">Eve λ/2</text>
+            <text x="480" y="180" text-anchor="middle" fill="var(--muted)" font-size="10" id="eveHWPinLabel">— —</text>
+          </g>
+          <!-- Eve PBS -->
+          <g>
+            <rect x="540" y="120" width="40" height="40" fill="rgba(255,122,162,0.10)" stroke="var(--eve)" stroke-width="1.5"/>
+            <line x1="540" y1="160" x2="580" y2="120" stroke="var(--eve)" stroke-width="1.5"/>
+            <text x="560" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">PBS</text>
+          </g>
+          <!-- Eve detectors (mirror Bob's) -->
+          <g id="eveDet0">
+            <rect x="610" y="130" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+            <text x="625" y="125" text-anchor="middle" fill="var(--muted)" font-size="10">det 0</text>
+            <text x="625" y="165" text-anchor="middle" fill="var(--bit0)" font-size="10" font-weight="700">(H)</text>
+          </g>
+          <g id="eveDet1">
+            <rect x="535" y="60" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+            <text x="550" y="55" text-anchor="middle" fill="var(--muted)" font-size="10">det 1</text>
+            <text x="580" y="72" text-anchor="start" fill="var(--bit1)" font-size="10" font-weight="700">(V)</text>
+          </g>
+
+          <!-- Eve sender = mirror of Alice -->
+          <text x="700" y="78" text-anchor="middle" fill="var(--eve)" font-size="11" font-weight="600" opacity="0.85">Eve sender</text>
+          <!-- Eve resend laser -->
+          <g>
+            <rect x="640" y="125" width="20" height="30" rx="3" fill="#3a1818" stroke="var(--eve)"/>
+            <circle cx="657" cy="140" r="2.5" fill="var(--eve)"/>
+            <text x="650" y="180" text-anchor="middle" fill="var(--muted)" font-size="9">resend</text>
+          </g>
+          <!-- Eve HWP (out) -->
+          <g>
+            <circle cx="720" cy="140" r="20" fill="var(--panel)" stroke="var(--eve)" stroke-width="2"/>
+            <line id="eveHWPaxisOut" x1="700" y1="140" x2="740" y2="140" stroke="var(--eve)" stroke-width="2" stroke-dasharray="3 2"/>
+            <text x="720" y="110" text-anchor="middle" fill="var(--eve)" font-size="11" font-weight="600">Eve λ/2</text>
+            <text x="720" y="180" text-anchor="middle" fill="var(--muted)" font-size="10" id="eveHWPoutLabel">— —</text>
+          </g>
+        </g>
+
+        <!-- Polarization indicator: Eve → Bob (visible when Eve on) -->
+        <g id="travelPol2" opacity="0">
+          <circle cx="850" cy="140" r="18" fill="var(--bg)" stroke="var(--eve)" stroke-dasharray="2 2"/>
+          <line id="travelArrow2" x1="835" y1="140" x2="865" y2="140" stroke="var(--bit0)" stroke-width="2.5" stroke-linecap="round" marker-start="url(#polArrow)" marker-end="url(#polArrow)" color="var(--bit0)"/>
+          <text x="850" y="180" text-anchor="middle" fill="var(--eve)" font-size="10" id="travelLabel2">re-emitted</text>
+        </g>
+
+        <!-- ===== BOB SECTION ===== -->
+        <rect id="bobBasisBg" x="925" y="35" width="225" height="180" rx="8" fill="transparent" stroke="none"/>
+        <g id="bobBasisBadge" opacity="0">
+          <circle cx="950" cy="55" r="18" fill="var(--bg)" stroke="var(--plus)" stroke-width="2"/>
+          <text id="bobBasisBadgeText" x="950" y="63" text-anchor="middle" font-size="24" font-weight="700" fill="var(--plus)">+</text>
+        </g>
+        <g id="bobHWP">
+          <circle cx="950" cy="140" r="20" fill="var(--panel)" stroke="var(--accent-2)" stroke-width="2"/>
+          <line id="bobHWPaxis" x1="930" y1="140" x2="970" y2="140" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="950" y="110" text-anchor="middle" fill="var(--accent-2)" font-size="11" font-weight="600">Bob λ/2</text>
+          <text x="950" y="180" text-anchor="middle" fill="var(--muted)" font-size="10" id="bobHWPlabel">— —</text>
+        </g>
+        <g id="bobPBS">
+          <rect x="1030" y="120" width="40" height="40" fill="rgba(179,136,255,0.10)" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <line x1="1030" y1="160" x2="1070" y2="120" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <text x="1050" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">PBS</text>
+        </g>
+        <g id="bobDet0">
+          <rect x="1110" y="130" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+          <text x="1125" y="125" text-anchor="middle" fill="var(--muted)" font-size="10">det 0</text>
+          <text x="1125" y="165" text-anchor="middle" fill="var(--bit0)" font-size="10" font-weight="700">(H)</text>
+        </g>
+        <g id="bobDet1">
+          <rect x="1025" y="60" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+          <text x="1040" y="55" text-anchor="middle" fill="var(--muted)" font-size="10">det 1</text>
+          <text x="1070" y="72" text-anchor="start" fill="var(--bit1)" font-size="10" font-weight="700">(V)</text>
+        </g>
+
+        <!-- Animated photons painted last so they sit on top of beams -->
+        <circle id="photonAliceDot" cx="60" cy="140" r="7" fill="#6ee7a8" opacity="0" stroke="#fff" stroke-width="0.5"/>
+        <circle id="photonEveDot" cx="650" cy="140" r="7" fill="#6ee7a8" opacity="0" stroke="#fff" stroke-width="0.5"/>
+
+      </svg>
+    </div>
+
+    <div class="row">
+
+      <div class="col alice-bg" style="padding-left: 14px;">
+        <h3>Alice (sender)</h3>
+        <div class="dice-area">
+          <div class="die-block">
+            <div class="die-label">Red d6 — <strong>basis</strong><br/>odd → <span class="badge-plus">+</span> · even → <span class="badge-x">×</span></div>
+            <div class="die red" id="aliceBasisDie">?</div>
+            <div class="die-row">
+              <button class="secondary small" id="aliceBasisRoll">Roll</button>
+              <input type="number" min="1" max="6" placeholder="1–6" id="aliceBasisInput"/>
+            </div>
+            <div class="die-result" id="aliceBasisResult">&nbsp;</div>
+          </div>
+          <div class="die-block">
+            <div class="die-label">Black d8 — <strong>bit</strong><br/>1–4 → <span class="bit0">0</span> · 5–8 → <span class="bit1">1</span></div>
+            <div class="die black" id="aliceBitDie">?</div>
+            <div class="die-row">
+              <button class="secondary small" id="aliceBitRoll">Roll</button>
+              <input type="number" min="1" max="8" placeholder="1–8" id="aliceBitInput"/>
+            </div>
+            <div class="die-result" id="aliceBitResult">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col bob-bg" style="padding-left: 14px;">
+        <h3>Bob (receiver)</h3>
+        <div class="dice-area">
+          <div class="die-block">
+            <div class="die-label">Red d6 — <strong>basis</strong><br/>odd → <span class="badge-plus">+</span> · even → <span class="badge-x">×</span></div>
+            <div class="die red" id="bobBasisDie">?</div>
+            <div class="die-row">
+              <button class="secondary small" id="bobBasisRoll">Roll</button>
+              <input type="number" min="1" max="6" placeholder="1–6" id="bobBasisInput"/>
+            </div>
+            <div class="die-result" id="bobBasisResult">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col hidden" id="eveCol" style="padding-left: 14px; border-left: 3px solid var(--eve);">
+        <h3 style="color: var(--eve);">Eve (eavesdropper)</h3>
+        <div class="dice-area">
+          <div class="die-block">
+            <div class="die-label">Eve d6 — <strong>basis</strong><br/>odd → <span class="badge-plus">+</span> · even → <span class="badge-x">×</span></div>
+            <div class="die red" id="eveBasisDie" style="border-color: var(--eve); box-shadow: 0 0 12px rgba(255,122,162,0.4);">?</div>
+            <div class="die-row">
+              <button class="secondary small" id="eveBasisRoll">Roll</button>
+              <input type="number" min="1" max="6" placeholder="1–6" id="eveBasisInput"/>
+            </div>
+            <div class="die-result" id="eveBasisResult">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="outcome" id="outcomeBox">Roll all the dice (or type real-dice values) to see what the optics do this round.</div>
+
+    <div class="step-controls">
+      <button id="commitBtn" disabled>Record this round →</button>
+      <div class="progress"><div id="progBar" style="width: 0%"></div></div>
+      <span class="mono" id="progText" style="color: var(--muted); font-size: 12px;">0 / 0 rounds · 0 sifted bits</span>
+    </div>
+
+    <div class="auto-row">
+      <button class="secondary" id="autoRollBtn">⚄ Auto-roll all dice</button>
+      <button class="secondary" id="autoRoundBtn">⚄ Auto-roll &amp; record</button>
+      <button id="autoFillBtn" class="big">▶ Auto-run until key complete</button>
+      <span class="hint" style="margin: 0;">"Auto-run" generates rounds at full speed until enough sifted bits exist for the message.</span>
+    </div>
+  </div>
+
+  <!-- Running table -->
+  <div class="panel hidden" id="tablePanel">
+    <h2>3 · Public basis comparison &amp; sifted key</h2>
+    <div class="legend">
+      <span style="color: var(--ok);">■ Same basis → keep</span>
+      <span style="color: var(--bad);">■ Different basis → discard</span>
+    </div>
+    <div class="scroll-x" style="margin-top: 12px;">
+      <table class="bit-table" id="historyTable">
+        <thead>
+          <tr id="histHeadRow"><th class="label-col">Round</th></tr>
+          <tr id="histAliceBasis"><th class="label-col">Alice basis</th></tr>
+          <tr id="histAliceBit"><th class="label-col">Alice bit</th></tr>
+          <tr id="histEveBasis" class="hidden"><th class="label-col">Eve basis</th></tr>
+          <tr id="histEveBit" class="hidden"><th class="label-col">Eve bit</th></tr>
+          <tr id="histBobBasis"><th class="label-col">Bob basis</th></tr>
+          <tr id="histBobBit"><th class="label-col">Bob bit</th></tr>
+          <tr id="histKeep"><th class="label-col">Keep?</th></tr>
+        </thead>
+      </table>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="k">Rounds</div><div class="v" id="statRounds">0</div></div>
+      <div class="stat"><div class="k">Same basis</div><div class="v" id="statSame">0</div></div>
+      <div class="stat"><div class="k">Sifted key</div><div class="v" id="statKey">0</div></div>
+      <div class="stat"><div class="k">Need</div><div class="v" id="statNeed">0</div></div>
+    </div>
+  </div>
+
+  <!-- Step 4: Encryption + Eve detection via message comparison -->
+  <div class="panel hidden" id="finishPanel">
+    <h2>4 · Encrypt, transmit, decrypt</h2>
+    <p class="hint" style="margin-top: 0;">In real BB84, a separate set of bits would be sacrificed and publicly compared as a test for Eve before encryption. For this demo we just encrypt the message and use Bob's recovered text as the eavesdropping check — if Eve was listening, his decoded message will be garbled.</p>
+
+    <div style="margin-top: 16px;">
+      <h3>Sifted key</h3>
+      <div class="key-display" id="finalKeyDisplay">—</div>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <h3>Encryption: message ⊕ key</h3>
+      <div class="scroll-x">
+        <table class="bit-table" id="encryptTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <h3>Bob's decryption: ciphertext ⊕ key</h3>
+      <div class="key-display" id="decryptDisplay">—</div>
+    </div>
+
+    <div id="eveCheckBox" class="outcome" style="margin-top: 16px;">
+      <strong>Eavesdropping check:</strong> <span id="eveCheckText"></span>
+    </div>
+
+    <div class="step-controls">
+      <button class="secondary" id="restartBtn">Run a new demo</button>
+    </div>
+  </div>
+
+  <footer>BB84 protocol after Bennett &amp; Brassard, 1984. Single-page local demo for the BAA outreach event.</footer>
+
+</div>
+
+<script>
+"use strict";
+
+// 5-bit alphabet (A=00000, ..., Z=11001)
+const ALPHA_TO_BITS = {};
+const BITS_TO_ALPHA = {};
+for (let i = 0; i < 26; i++) {
+  const letter = String.fromCharCode(65 + i);
+  const bits = i.toString(2).padStart(5, "0");
+  ALPHA_TO_BITS[letter] = bits;
+  BITS_TO_ALPHA[bits] = letter;
+}
+
+const state = {
+  message: "",
+  messageBits: "",
+  needBits: 0,
+  eveOn: false,
+  curAliceBasis: null, curAliceBit: null,
+  curEveBasis: null,   curEveBit: null,
+  curBobBasis: null,   curBobBit: null,
+  rounds: [],
+  finished: false,
+};
+
+// ---------- Helpers ----------
+function rand6() { return 1 + Math.floor(Math.random() * 6); }
+function rand8() { return 1 + Math.floor(Math.random() * 8); }
+function basisFromD6(n) { return (n % 2 === 1) ? "+" : "x"; }
+function bitFromD8(n)   { return (n <= 4) ? 0 : 1; }
+
+function polAngleFor(basis, bit) {
+  if (basis === "+") return bit === 0 ? 0   : 90;
+  else               return bit === 0 ? -45 : 45;
+}
+// λ/2 plate physical fast-axis angle for a desired output polarization
+// (when input is horizontal, 0°): physical angle = output_angle / 2.
+function hwpAngleFor(basis, bit) {
+  return polAngleFor(basis, bit) / 2;
+}
+// Bob's HWP physical angle to map his chosen basis back to the +basis at the PBS:
+// + basis → 0° (no rotation); × basis → 22.5° (rotates ±45° back to 0°/90°).
+function bobHwpAngle(basis) { return basis === "+" ? 0 : 22.5; }
+// Eve's "in" HWP plays the same role as Bob's analyzer:
+function eveInHwpAngle(basis) { return basis === "+" ? 0 : 22.5; }
+// Eve's "out" HWP re-creates the polarization for the bit she measured, in her basis:
+function eveOutHwpAngle(basis, bit) { return polAngleFor(basis, bit) / 2; }
+
+function measureBob(incomingBasis, incomingBit, bobBasis) {
+  if (incomingBasis === bobBasis) return incomingBit;
+  return Math.random() < 0.5 ? 0 : 1;
+}
+function measureEve(aliceBasis, aliceBit, eveBasis) {
+  if (eveBasis === aliceBasis) return aliceBit;
+  return Math.random() < 0.5 ? 0 : 1;
+}
+
+function basisPill(b) {
+  if (b === "+") return '<span class="pill plus">+</span>';
+  if (b === "x") return '<span class="pill x">×</span>';
+  return "—";
+}
+function bitSpan(b) {
+  if (b === 0) return '<span class="bit0">0</span>';
+  if (b === 1) return '<span class="bit1">1</span>';
+  return "—";
+}
+function xor(a, b) { return (a === b) ? "0" : "1"; }
+function xorString(a, b) {
+  let out = "";
+  for (let i = 0; i < a.length; i++) out += xor(a[i], b[i]);
+  return out;
+}
+
+// ---------- DOM refs ----------
+const $ = (id) => document.getElementById(id);
+const messageInput = $("messageInput");
+const startBtn = $("startBtn");
+const startHint = $("startHint");
+const eveToggle = $("eveToggle");
+const eveStateLabel = $("eveStateLabel");
+const eveCol = $("eveCol");
+
+const aliceBasisDie = $("aliceBasisDie"), aliceBasisRoll = $("aliceBasisRoll"), aliceBasisResult = $("aliceBasisResult"), aliceBasisInput = $("aliceBasisInput");
+const aliceBitDie = $("aliceBitDie"), aliceBitRoll = $("aliceBitRoll"), aliceBitResult = $("aliceBitResult"), aliceBitInput = $("aliceBitInput");
+const bobBasisDie = $("bobBasisDie"), bobBasisRoll = $("bobBasisRoll"), bobBasisResult = $("bobBasisResult"), bobBasisInput = $("bobBasisInput");
+const eveBasisDie = $("eveBasisDie"), eveBasisRoll = $("eveBasisRoll"), eveBasisResult = $("eveBasisResult"), eveBasisInput = $("eveBasisInput");
+
+const outcomeBox = $("outcomeBox");
+const commitBtn = $("commitBtn");
+const progBar = $("progBar"), progText = $("progText");
+
+const genPanel = $("genPanel"), tablePanel = $("tablePanel"), finishPanel = $("finishPanel"), progressPanel = $("progressPanel");
+const msgStrip = $("msgStrip");
+
+const autoRollBtn = $("autoRollBtn"), autoRoundBtn = $("autoRoundBtn"), autoFillBtn = $("autoFillBtn");
+
+// Schematic refs
+const schemAliceHWPaxis = $("aliceHWPaxis");
+const schemAliceHWPlabel = $("aliceHWPlabel");
+const schemBobHWPaxis = $("bobHWPaxis");
+const schemBobHWPlabel = $("bobHWPlabel");
+const schemTravelPol1 = $("travelPol1");
+const schemTravelArrow1 = $("travelArrow1");
+const schemTravelLabel1 = $("travelLabel1");
+const schemTravelPol2 = $("travelPol2");
+const schemTravelArrow2 = $("travelArrow2");
+const schemTravelLabel2 = $("travelLabel2");
+const schemEveModule = $("eveModule");
+const schemEveRegionLabel = $("eveRegionLabel");
+const schemEveRegionLine = $("eveRegionLine");
+const schemEveHWPin = $("eveHWPaxisIn");
+const schemEveHWPout = $("eveHWPaxisOut");
+const schemEveHWPinLabel = $("eveHWPinLabel");
+const schemEveHWPoutLabel = $("eveHWPoutLabel");
+// Beam segments
+const schemBeamAliceToEve = $("beam_alice_to_eve");
+const schemBeamAliceToBob = $("beam_alice_to_bob");
+const schemBeamEveHwpPbs = $("beam_eveHwp_pbs");
+const schemBeamEvePbsDet0 = $("beam_evePbs_det0");
+const schemBeamEvePbsDet1 = $("beam_evePbs_det1");
+const schemBeamEveResend = $("beam_eveResend_hwp");
+const schemBeamEveToBob = $("beam_eve_to_bob");
+const schemBeamBobPbsDet0 = $("beam_bobPbs_det0");
+const schemBeamBobPbsDet1 = $("beam_bobPbs_det1");
+const photonAliceDot = $("photonAliceDot");
+const photonEveDot = $("photonEveDot");
+const aliceBasisBg = $("aliceBasisBg"), aliceBasisBadge = $("aliceBasisBadge"), aliceBasisBadgeText = $("aliceBasisBadgeText");
+const bobBasisBg = $("bobBasisBg"),     bobBasisBadge = $("bobBasisBadge"),     bobBasisBadgeText = $("bobBasisBadgeText");
+const eveBasisBg = $("eveBasisBg"),     eveBasisBadge = $("eveBasisBadge"),     eveBasisBadgeText = $("eveBasisBadgeText");
+
+// Animation state (driven by requestAnimationFrame because Element.animate()
+// does NOT animate SVG geometry attributes like cx/cy in most browsers).
+let photonAnimRAF = null;
+let photonAnimStart = 0;
+let photonPathA = null;     // array of {x,y} waypoints for Alice's photon
+let photonPathE = null;     // array of {x,y} waypoints for Eve's re-emitted photon
+let photonColorA = null;
+let photonColorE = null;
+const PHOTON_PERIOD_MS = 2400;
+
+// ---------- Eve toggle ----------
+eveToggle.addEventListener("click", () => {
+  state.eveOn = !state.eveOn;
+  syncEve();
+});
+function syncEve() {
+  eveToggle.classList.toggle("active", state.eveOn);
+  eveToggle.setAttribute("aria-pressed", state.eveOn ? "true" : "false");
+  eveStateLabel.textContent = state.eveOn ? "ON" : "off";
+  eveCol.classList.toggle("hidden", !state.eveOn);
+  $("histEveBasis").classList.toggle("hidden", !state.eveOn);
+  $("histEveBit").classList.toggle("hidden", !state.eveOn);
+  // Schematic: show/hide Eve module and switch beam routing
+  schemEveModule.setAttribute("opacity", state.eveOn ? "1" : "0");
+  schemEveRegionLabel.setAttribute("opacity", state.eveOn ? "1" : "0");
+  schemEveRegionLine.setAttribute("opacity", state.eveOn ? "0.4" : "0");
+  schemBeamAliceToEve.setAttribute("opacity", state.eveOn ? "1" : "0");
+  schemBeamAliceToBob.setAttribute("opacity", state.eveOn ? "0" : "1");
+  schemBeamEveHwpPbs.setAttribute("opacity", state.eveOn ? "1" : "0");
+  schemBeamEveResend.setAttribute("opacity", state.eveOn ? "1" : "0");
+  schemBeamEveToBob.setAttribute("opacity", state.eveOn ? "1" : "0");
+  state.curEveBasis = null; state.curEveBit = null;
+  eveBasisDie.textContent = "?"; eveBasisResult.textContent = "";
+  if (eveBasisInput) eveBasisInput.value = "";
+  stopPhotonAnimations();
+  recomputeOutcome();
+}
+
+// ---------- Message input ----------
+const encodeExample = $("encodeExample");
+const encodeExampleStrip = $("encodeExampleStrip");
+
+function renderEncodeExample(word) {
+  encodeExampleStrip.innerHTML = "";
+  for (const ch of word) {
+    const bits = ALPHA_TO_BITS[ch];
+    const cell = document.createElement("div");
+    cell.style.cssText = "display:flex; flex-direction:column; align-items:center; gap:4px;";
+    cell.innerHTML = `
+      <div style="font-family: ui-monospace, Menlo, monospace; font-size: 22px; font-weight: 700; color: var(--text);">${ch}</div>
+      <div style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; letter-spacing: 0.1em; color: var(--accent);">${bits}</div>
+    `;
+    encodeExampleStrip.appendChild(cell);
+  }
+}
+
+messageInput.addEventListener("input", () => {
+  const cleaned = messageInput.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 8);
+  if (cleaned !== messageInput.value) messageInput.value = cleaned;
+  if (cleaned.length > 0) {
+    startHint.textContent = `${cleaned.length} letters · ${cleaned.length * 5} sifted bits needed.`;
+    startBtn.disabled = false;
+    encodeExample.classList.remove("hidden");
+    renderEncodeExample(cleaned);
+  } else {
+    startHint.textContent = "";
+    startBtn.disabled = true;
+    encodeExample.classList.add("hidden");
+  }
+});
+
+startBtn.addEventListener("click", () => {
+  state.message = messageInput.value.toUpperCase();
+  state.messageBits = state.message.split("").map(ch => ALPHA_TO_BITS[ch]).join("");
+  state.needBits = state.messageBits.length;
+  state.rounds = []; state.finished = false;
+  buildHistoryHeader();
+  buildMessageStrip();
+  progressPanel.classList.remove("hidden");
+  genPanel.classList.remove("hidden");
+  tablePanel.classList.remove("hidden");
+  finishPanel.classList.add("hidden");
+  resetRoundDice();
+  updateProgress();
+  genPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+// ---------- Message strip ----------
+function buildMessageStrip() {
+  msgStrip.innerHTML = "";
+  for (let i = 0; i < state.message.length; i++) {
+    const letterDiv = document.createElement("div");
+    letterDiv.className = "msg-letter";
+    const ch = document.createElement("div");
+    ch.className = "ch"; ch.textContent = state.message[i];
+    const bitsDiv = document.createElement("div");
+    bitsDiv.className = "bits";
+    for (let j = 0; j < 5; j++) {
+      const b = document.createElement("div");
+      b.className = "b"; b.textContent = "·";
+      bitsDiv.appendChild(b);
+    }
+    letterDiv.appendChild(ch); letterDiv.appendChild(bitsDiv);
+    msgStrip.appendChild(letterDiv);
+  }
+}
+function updateMessageStrip(filledBits) {
+  const cells = msgStrip.querySelectorAll(".b");
+  cells.forEach((cell, idx) => {
+    const bitVal = state.messageBits[idx];
+    if (idx < filledBits) {
+      cell.classList.add("filled");
+      cell.classList.toggle("bit0", bitVal === "0");
+      cell.classList.toggle("bit1", bitVal === "1");
+      cell.textContent = bitVal;
+    } else {
+      cell.classList.remove("filled","bit0","bit1");
+      cell.textContent = "·";
+    }
+  });
+}
+
+// ---------- Schematic helpers ----------
+function setHWPLine(lineEl, physicalAngleDeg) {
+  // Line is a fast-axis indicator across the HWP circle.
+  // Physical angle is the literal rotation of the waveplate (in degrees,
+  // relative to horizontal). Length is the diameter of the circle.
+  const cx = +lineEl.parentNode.querySelector("circle").getAttribute("cx");
+  const cy = +lineEl.parentNode.querySelector("circle").getAttribute("cy");
+  const r  = +lineEl.parentNode.querySelector("circle").getAttribute("r");
+  const a = -physicalAngleDeg * Math.PI / 180;
+  const dx = Math.cos(a) * r, dy = Math.sin(a) * r;
+  lineEl.setAttribute("x1", cx - dx); lineEl.setAttribute("y1", cy - dy);
+  lineEl.setAttribute("x2", cx + dx); lineEl.setAttribute("y2", cy + dy);
+}
+function setTravelArrowAt(groupEl, lineEl, labelEl, cx, angleDeg, color, basis, labelText) {
+  groupEl.setAttribute("opacity", "1");
+  const cy = 140, r = 14;
+  const a = -angleDeg * Math.PI / 180;
+  const dx = Math.cos(a) * r, dy = Math.sin(a) * r;
+  lineEl.setAttribute("x1", cx - dx); lineEl.setAttribute("y1", cy - dy);
+  lineEl.setAttribute("x2", cx + dx); lineEl.setAttribute("y2", cy + dy);
+  lineEl.setAttribute("stroke", color);
+  lineEl.setAttribute("color", color);
+  labelEl.textContent = `${labelText} ${angleDeg}° (basis ${basis === "+" ? "+" : "×"})`;
+  labelEl.setAttribute("fill", color);
+}
+function clearTravelArrow1() {
+  schemTravelPol1.setAttribute("opacity", "0");
+  schemTravelLabel1.textContent = "photon";
+  schemTravelLabel1.setAttribute("fill", "var(--muted)");
+}
+function clearTravelArrow2() {
+  schemTravelPol2.setAttribute("opacity", "0");
+  schemTravelLabel2.textContent = "re-emitted";
+  schemTravelLabel2.setAttribute("fill", "var(--eve)");
+}
+function setBobDetectorHighlight(bobBit) {
+  if (bobBit === 0) {
+    schemBeamBobPbsDet0.setAttribute("opacity", "1");
+    schemBeamBobPbsDet0.setAttribute("stroke", "var(--bit0)");
+    schemBeamBobPbsDet1.setAttribute("opacity", "0");
+  } else if (bobBit === 1) {
+    schemBeamBobPbsDet1.setAttribute("opacity", "1");
+    schemBeamBobPbsDet1.setAttribute("stroke", "var(--bit1)");
+    schemBeamBobPbsDet0.setAttribute("opacity", "0");
+  } else {
+    schemBeamBobPbsDet0.setAttribute("opacity", "0");
+    schemBeamBobPbsDet1.setAttribute("opacity", "0");
+  }
+}
+function setEveDetectorHighlight(eveBit) {
+  if (eveBit === 0) {
+    schemBeamEvePbsDet0.setAttribute("opacity", "1");
+    schemBeamEvePbsDet0.setAttribute("stroke", "var(--bit0)");
+    schemBeamEvePbsDet1.setAttribute("opacity", "0");
+  } else if (eveBit === 1) {
+    schemBeamEvePbsDet1.setAttribute("opacity", "1");
+    schemBeamEvePbsDet1.setAttribute("stroke", "var(--bit1)");
+    schemBeamEvePbsDet0.setAttribute("opacity", "0");
+  } else {
+    schemBeamEvePbsDet0.setAttribute("opacity", "0");
+    schemBeamEvePbsDet1.setAttribute("opacity", "0");
+  }
+}
+// ---- Photon animation (one shot per round, sequential when Eve is on) ----
+function colorForBit(b) { return b === 0 ? "#6ee7a8" : "#ff7aa2"; }
+
+function pointAlongPath(points, t) {
+  if (t <= 0) return points[0];
+  if (t >= 1) return points[points.length - 1];
+  const segLens = [];
+  let total = 0;
+  for (let i = 0; i < points.length - 1; i++) {
+    const dx = points[i+1].x - points[i].x;
+    const dy = points[i+1].y - points[i].y;
+    const L = Math.hypot(dx, dy);
+    segLens.push(L); total += L;
+  }
+  let target = t * total;
+  for (let i = 0; i < segLens.length; i++) {
+    if (target <= segLens[i]) {
+      const f = segLens[i] === 0 ? 0 : target / segLens[i];
+      return {
+        x: points[i].x + (points[i+1].x - points[i].x) * f,
+        y: points[i].y + (points[i+1].y - points[i].y) * f,
+      };
+    }
+    target -= segLens[i];
+  }
+  return points[points.length - 1];
+}
+
+let photonShotToken = 0;  // increments on each new shot to invalidate stale frames
+
+function stopPhotonAnimations() {
+  photonShotToken++;
+  if (photonAnimRAF) { cancelAnimationFrame(photonAnimRAF); photonAnimRAF = null; }
+  photonAliceDot.setAttribute("opacity", "0");
+  photonEveDot.setAttribute("opacity", "0");
+}
+
+// Animate a single dot along a path, once. Returns a Promise that resolves on completion.
+function shootPhoton(dotEl, path, color, durationMs, token) {
+  return new Promise((resolve) => {
+    dotEl.setAttribute("fill", color);
+    dotEl.setAttribute("opacity", "1");
+    let start = null;
+    function frame(ts) {
+      if (token !== photonShotToken) { resolve(); return; }
+      if (start === null) start = ts;
+      const t = Math.min(1, (ts - start) / durationMs);
+      const p = pointAlongPath(path, t);
+      dotEl.setAttribute("cx", p.x);
+      dotEl.setAttribute("cy", p.y);
+      if (t < 1) {
+        photonAnimRAF = requestAnimationFrame(frame);
+      } else {
+        // Briefly hold at the detector, then hide
+        setTimeout(() => {
+          if (token === photonShotToken) dotEl.setAttribute("opacity", "0");
+          resolve();
+        }, 250);
+      }
+    }
+    photonAnimRAF = requestAnimationFrame(frame);
+  });
+}
+
+async function startPhotonAnimations() {
+  stopPhotonAnimations();
+  const token = photonShotToken;
+  if (state.curAliceBasis === null || state.curAliceBit === null) return;
+  if (state.curBobBasis === null) return;
+  if (state.eveOn && state.curEveBasis === null) return;
+
+  if (state.eveOn) {
+    // Photon 1: laser → Alice HWP → Eve HWP → Eve PBS → Eve det
+    const eveBit = state.curEveBit;
+    const aPath = [
+      { x: 60,  y: 140 },
+      { x: 180, y: 140 },
+      { x: 480, y: 140 },
+      { x: 560, y: 140 },
+    ];
+    if (eveBit === 1) { aPath.push({ x: 550, y: 75 }); }
+    else              { aPath.push({ x: 625, y: 140 }); }
+    await shootPhoton(photonAliceDot, aPath, colorForBit(state.curAliceBit), 1400, token);
+    if (token !== photonShotToken) return;
+
+    // Photon 2: Eve resend laser → Eve out HWP → Bob HWP → Bob PBS → Bob det
+    const bobBit = state.curBobBit;
+    const ePath = [
+      { x: 660, y: 140 },
+      { x: 720, y: 140 },
+      { x: 950, y: 140 },
+      { x: 1050, y: 140 },
+    ];
+    if (bobBit === 1) { ePath.push({ x: 1040, y: 75 }); }
+    else              { ePath.push({ x: 1125, y: 140 }); }
+    await shootPhoton(photonEveDot, ePath, colorForBit(eveBit), 1400, token);
+  } else {
+    const bobBit = state.curBobBit;
+    const aPath = [
+      { x: 60,   y: 140 },
+      { x: 180,  y: 140 },
+      { x: 950,  y: 140 },
+      { x: 1050, y: 140 },
+    ];
+    if (bobBit === 1) { aPath.push({ x: 1040, y: 75 }); }
+    else              { aPath.push({ x: 1125, y: 140 }); }
+    await shootPhoton(photonAliceDot, aPath, colorForBit(state.curAliceBit), 1800, token);
+  }
+}
+
+function setBasisVisuals(bg, badge, badgeText, basis) {
+  if (basis === null) {
+    bg.setAttribute("fill", "transparent");
+    badge.setAttribute("opacity", "0");
+    return;
+  }
+  const isPlus = basis === "+";
+  // Tinted backdrop
+  bg.setAttribute("fill", isPlus ? "rgba(92,200,255,0.08)" : "rgba(255,184,107,0.08)");
+  bg.setAttribute("stroke", isPlus ? "rgba(92,200,255,0.4)" : "rgba(255,184,107,0.4)");
+  bg.setAttribute("stroke-width", "1");
+  // Big badge
+  const color = isPlus ? "var(--plus)" : "var(--xbasis)";
+  badge.setAttribute("opacity", "1");
+  const circle = badge.querySelector("circle");
+  circle.setAttribute("stroke", color);
+  badgeText.setAttribute("fill", color);
+  badgeText.textContent = isPlus ? "+" : "×";
+}
+
+function updateSchematic() {
+  // ---- Basis badges + backdrops ----
+  setBasisVisuals(aliceBasisBg, aliceBasisBadge, aliceBasisBadgeText, state.curAliceBasis);
+  setBasisVisuals(bobBasisBg,   bobBasisBadge,   bobBasisBadgeText,   state.curBobBasis);
+  if (state.eveOn) {
+    setBasisVisuals(eveBasisBg, eveBasisBadge, eveBasisBadgeText, state.curEveBasis);
+  } else {
+    setBasisVisuals(eveBasisBg, eveBasisBadge, eveBasisBadgeText, null);
+  }
+
+  // ---- Alice's HWP & first travel arrow (after Alice's HWP, before Eve/Bob) ----
+  if (state.curAliceBasis !== null && state.curAliceBit !== null) {
+    const ang = hwpAngleFor(state.curAliceBasis, state.curAliceBit);
+    setHWPLine(schemAliceHWPaxis, ang);
+    schemAliceHWPlabel.textContent = `physical ${ang}°`;
+    const polAng = polAngleFor(state.curAliceBasis, state.curAliceBit);
+    const color = state.curAliceBit === 0 ? "var(--bit0)" : "var(--bit1)";
+    setTravelArrowAt(schemTravelPol1, schemTravelArrow1, schemTravelLabel1, 300, polAng, color, state.curAliceBasis, "Alice→");
+  } else {
+    setHWPLine(schemAliceHWPaxis, 0);
+    schemAliceHWPlabel.textContent = "— —";
+    clearTravelArrow1();
+  }
+
+  // ---- Eve module ----
+  if (state.eveOn) {
+    if (state.curEveBasis !== null) {
+      const inAng = eveInHwpAngle(state.curEveBasis);
+      setHWPLine(schemEveHWPin, inAng);
+      schemEveHWPinLabel.textContent = `physical ${inAng}°`;
+      const eveBit = state.curEveBit;
+      if (eveBit !== null) {
+        const outAng = eveOutHwpAngle(state.curEveBasis, eveBit);
+        setHWPLine(schemEveHWPout, outAng);
+        schemEveHWPoutLabel.textContent = `physical ${outAng}°`;
+        setEveDetectorHighlight(eveBit);
+        const polAng = polAngleFor(state.curEveBasis, eveBit);
+        const color = eveBit === 0 ? "var(--bit0)" : "var(--bit1)";
+        setTravelArrowAt(schemTravelPol2, schemTravelArrow2, schemTravelLabel2, 850, polAng, color, state.curEveBasis, "Eve→");
+      } else {
+        setHWPLine(schemEveHWPout, 0);
+        schemEveHWPoutLabel.textContent = "— —";
+        setEveDetectorHighlight(null);
+        clearTravelArrow2();
+      }
+    } else {
+      setHWPLine(schemEveHWPin, 0);
+      setHWPLine(schemEveHWPout, 0);
+      schemEveHWPinLabel.textContent = "— —";
+      schemEveHWPoutLabel.textContent = "— —";
+      setEveDetectorHighlight(null);
+      clearTravelArrow2();
+    }
+  } else {
+    clearTravelArrow2();
+    setEveDetectorHighlight(null);
+  }
+
+  // ---- Bob's HWP ----
+  if (state.curBobBasis !== null) {
+    setHWPLine(schemBobHWPaxis, bobHwpAngle(state.curBobBasis));
+    schemBobHWPlabel.textContent = `physical ${bobHwpAngle(state.curBobBasis)}°`;
+  } else {
+    setHWPLine(schemBobHWPaxis, 0);
+    schemBobHWPlabel.textContent = "— —";
+  }
+  setBobDetectorHighlight(state.curBobBit);
+}
+
+// ---------- Dice ----------
+function animateDie(dieEl, finalText) {
+  dieEl.classList.add("rolling");
+  setTimeout(() => {
+    dieEl.classList.remove("rolling");
+    dieEl.textContent = finalText;
+  }, 400);
+}
+function setAliceBasisFromN(n, fromInput) {
+  const basis = basisFromD6(n);
+  if (!fromInput) animateDie(aliceBasisDie, n); else aliceBasisDie.textContent = n;
+  state.curAliceBasis = basis;
+  aliceBasisResult.innerHTML = `${n} → ${basisPill(basis)} basis`;
+  recomputeOutcome();
+}
+function setAliceBitFromN(n, fromInput) {
+  const bit = bitFromD8(n);
+  if (!fromInput) animateDie(aliceBitDie, n); else aliceBitDie.textContent = n;
+  state.curAliceBit = bit;
+  aliceBitResult.innerHTML = `${n} → bit ${bitSpan(bit)}`;
+  recomputeOutcome();
+}
+function setBobBasisFromN(n, fromInput) {
+  const basis = basisFromD6(n);
+  if (!fromInput) animateDie(bobBasisDie, n); else bobBasisDie.textContent = n;
+  state.curBobBasis = basis;
+  bobBasisResult.innerHTML = `${n} → ${basisPill(basis)} basis`;
+  recomputeOutcome();
+}
+function setEveBasisFromN(n, fromInput) {
+  const basis = basisFromD6(n);
+  if (!fromInput) animateDie(eveBasisDie, n); else eveBasisDie.textContent = n;
+  state.curEveBasis = basis;
+  eveBasisResult.innerHTML = `${n} → ${basisPill(basis)} basis`;
+  recomputeOutcome();
+}
+
+aliceBasisRoll.addEventListener("click", () => { const n = rand6(); aliceBasisInput.value = ""; setAliceBasisFromN(n, false); });
+aliceBitRoll.addEventListener("click",   () => { const n = rand8(); aliceBitInput.value   = ""; setAliceBitFromN(n, false); });
+bobBasisRoll.addEventListener("click",   () => { const n = rand6(); bobBasisInput.value   = ""; setBobBasisFromN(n, false); });
+eveBasisRoll.addEventListener("click",   () => { const n = rand6(); eveBasisInput.value   = ""; setEveBasisFromN(n, false); });
+
+function bindNumberInput(input, min, max, applyFn) {
+  input.addEventListener("input", () => {
+    const v = parseInt(input.value, 10);
+    if (Number.isInteger(v) && v >= min && v <= max) {
+      input.classList.remove("invalid");
+      applyFn(v, true);
+    } else if (input.value === "") {
+      input.classList.remove("invalid");
+    } else {
+      input.classList.add("invalid");
+    }
+  });
+}
+bindNumberInput(aliceBasisInput, 1, 6, setAliceBasisFromN);
+bindNumberInput(aliceBitInput,   1, 8, setAliceBitFromN);
+bindNumberInput(bobBasisInput,   1, 6, setBobBasisFromN);
+bindNumberInput(eveBasisInput,   1, 6, setEveBasisFromN);
+
+function resetRoundDice() {
+  state.curAliceBasis = state.curAliceBit = state.curBobBasis = null;
+  state.curEveBasis = state.curEveBit = state.curBobBit = null;
+  aliceBasisDie.textContent = "?"; aliceBasisResult.textContent = ""; aliceBasisInput.value = ""; aliceBasisInput.classList.remove("invalid");
+  aliceBitDie.textContent = "?";   aliceBitResult.textContent = "";   aliceBitInput.value = "";   aliceBitInput.classList.remove("invalid");
+  bobBasisDie.textContent = "?";   bobBasisResult.textContent = "";   bobBasisInput.value = "";   bobBasisInput.classList.remove("invalid");
+  eveBasisDie.textContent = "?";   eveBasisResult.textContent = "";   eveBasisInput.value = "";   eveBasisInput.classList.remove("invalid");
+  outcomeBox.className = "outcome";
+  outcomeBox.textContent = "Roll all the dice (or type real-dice values) to see what the optics do this round.";
+  commitBtn.disabled = true;
+  updateSchematic();
+}
+
+function recomputeOutcome() {
+  const haveAlice = state.curAliceBasis !== null && state.curAliceBit !== null;
+  const haveBob = state.curBobBasis !== null;
+  const needEve = state.eveOn;
+  const haveEve = !needEve || state.curEveBasis !== null;
+
+  if (!(haveAlice && haveBob && haveEve)) {
+    state.curBobBit = null;
+    if (needEve) state.curEveBit = null;
+    outcomeBox.className = "outcome";
+    outcomeBox.textContent = "Roll all the dice (or type real-dice values) to see what the optics do this round.";
+    commitBtn.disabled = true;
+    updateSchematic();
+    stopPhotonAnimations();
+    return;
+  }
+
+  let bobIncomingBasis = state.curAliceBasis;
+  let bobIncomingBit = state.curAliceBit;
+  let eveBit = null;
+  if (needEve) {
+    eveBit = measureEve(state.curAliceBasis, state.curAliceBit, state.curEveBasis);
+    state.curEveBit = eveBit;
+    bobIncomingBasis = state.curEveBasis;
+    bobIncomingBit = eveBit;
+  }
+  const bobBit = measureBob(bobIncomingBasis, bobIncomingBit, state.curBobBasis);
+  state.curBobBit = bobBit;
+
+  const sameBasis = state.curAliceBasis === state.curBobBasis;
+  let txt = `Alice sends ${bitSpan(state.curAliceBit)} in basis ${basisPill(state.curAliceBasis)} → polarization at <strong>${polAngleFor(state.curAliceBasis, state.curAliceBit)}°</strong>. `;
+  if (needEve) {
+    const eveCorrect = state.curEveBasis === state.curAliceBasis;
+    txt += `<span class="pill eve">Eve</span> measures in ${basisPill(state.curEveBasis)} → reads ${bitSpan(eveBit)} ${eveCorrect ? "(correctly — same basis)" : "(random — wrong basis!)"} and re-sends at <strong>${polAngleFor(state.curEveBasis, eveBit)}°</strong>. `;
+  }
+  txt += `Bob measures in ${basisPill(state.curBobBasis)} → detector ${bobBit} fires.`;
+
+  outcomeBox.innerHTML = txt;
+  outcomeBox.className = "outcome " + (sameBasis ? "same-basis" : "diff-basis") + (needEve ? " eve-active" : "");
+  commitBtn.disabled = false;
+  updateSchematic();
+  startPhotonAnimations();
+}
+
+// ---------- Auto-roll ----------
+function autoRollAll() {
+  // Roll simulated values for any dice the user hasn't manually set.
+  const aN = rand6(); aliceBasisInput.value = ""; setAliceBasisFromN(aN, false);
+  const bN = rand8(); aliceBitInput.value = "";   setAliceBitFromN(bN, false);
+  const cN = rand6(); bobBasisInput.value = "";   setBobBasisFromN(cN, false);
+  if (state.eveOn) {
+    const dN = rand6(); eveBasisInput.value = ""; setEveBasisFromN(dN, false);
+  }
+}
+autoRollBtn.addEventListener("click", () => autoRollAll());
+autoRoundBtn.addEventListener("click", () => {
+  autoRollAll();
+  // After the dice animation completes, commit. Use a timeout slightly longer
+  // than the shake animation (400ms).
+  setTimeout(() => {
+    if (!commitBtn.disabled) commitBtn.click();
+  }, 500);
+});
+autoFillBtn.addEventListener("click", async () => {
+  autoFillBtn.disabled = true;
+  // Run silently — pure logic, no animations between rounds — until enough sifted bits.
+  while (siftedBitCount() < state.needBits) {
+    state.curAliceBasis = basisFromD6(rand6());
+    state.curAliceBit   = bitFromD8(rand8());
+    state.curBobBasis   = basisFromD6(rand6());
+    state.curEveBasis   = state.eveOn ? basisFromD6(rand6()) : null;
+    if (state.eveOn) {
+      state.curEveBit = measureEve(state.curAliceBasis, state.curAliceBit, state.curEveBasis);
+      state.curBobBit = measureBob(state.curEveBasis, state.curEveBit, state.curBobBasis);
+    } else {
+      state.curBobBit = measureBob(state.curAliceBasis, state.curAliceBit, state.curBobBasis);
+    }
+    const r = {
+      aliceBasis: state.curAliceBasis, aliceBit: state.curAliceBit,
+      eveBasis: state.eveOn ? state.curEveBasis : null,
+      eveBit:   state.eveOn ? state.curEveBit : null,
+      bobBasis: state.curBobBasis, bobBit: state.curBobBit,
+      sameBasis: state.curAliceBasis === state.curBobBasis,
+    };
+    state.rounds.push(r);
+    appendRoundToTable(r, state.rounds.length);
+  }
+  resetRoundDice();
+  updateProgress();
+  finishProtocol();
+  autoFillBtn.disabled = false;
+});
+
+// ---------- Commit ----------
+commitBtn.addEventListener("click", () => {
+  const r = {
+    aliceBasis: state.curAliceBasis, aliceBit: state.curAliceBit,
+    eveBasis: state.eveOn ? state.curEveBasis : null,
+    eveBit:   state.eveOn ? state.curEveBit : null,
+    bobBasis: state.curBobBasis, bobBit: state.curBobBit,
+    sameBasis: state.curAliceBasis === state.curBobBasis,
+  };
+  state.rounds.push(r);
+  appendRoundToTable(r, state.rounds.length);
+  resetRoundDice();
+  updateProgress();
+  if (siftedBitCount() >= state.needBits) finishProtocol();
+});
+
+function siftedBitCount() {
+  return state.rounds.filter(r => r.sameBasis).length;
+}
+
+function updateProgress() {
+  const sifted = siftedBitCount();
+  const pct = Math.min(100, (sifted / state.needBits) * 100);
+  progBar.style.width = pct + "%";
+  progText.textContent = `${state.rounds.length} rounds · ${sifted} / ${state.needBits} sifted bits`;
+  $("statRounds").textContent = state.rounds.length;
+  $("statSame").textContent = sifted;
+  $("statKey").textContent = sifted;
+  $("statNeed").textContent = state.needBits;
+  updateMessageStrip(Math.min(sifted, state.messageBits.length));
+}
+
+// ---------- History table ----------
+function buildHistoryHeader() {
+  ["histHeadRow","histAliceBasis","histAliceBit","histEveBasis","histEveBit","histBobBasis","histBobBit","histKeep"].forEach(id => {
+    const tr = $(id);
+    while (tr.children.length > 1) tr.removeChild(tr.lastChild);
+  });
+  $("histEveBasis").classList.toggle("hidden", !state.eveOn);
+  $("histEveBit").classList.toggle("hidden", !state.eveOn);
+}
+function appendRoundToTable(r, idx) {
+  const head = $("histHeadRow");
+  const th = document.createElement("th"); th.textContent = idx; head.appendChild(th);
+  const td = (html, cls) => { const c = document.createElement("td"); c.innerHTML = html; if (cls) c.className = cls; return c; };
+  const cls = r.sameBasis ? "same" : "diff";
+  $("histAliceBasis").appendChild(td(basisPill(r.aliceBasis), cls));
+  $("histAliceBit").appendChild(td(bitSpan(r.aliceBit), cls));
+  if (state.eveOn) {
+    $("histEveBasis").appendChild(td(r.eveBasis ? basisPill(r.eveBasis) : "—", cls));
+    $("histEveBit").appendChild(td(r.eveBit !== null ? bitSpan(r.eveBit) : "—", cls));
+  }
+  $("histBobBasis").appendChild(td(basisPill(r.bobBasis), cls));
+  $("histBobBit").appendChild(td(bitSpan(r.bobBit), cls));
+  $("histKeep").appendChild(td(r.sameBasis ? "✓" : "✗", cls));
+}
+
+// ---------- Finish ----------
+function finishProtocol() {
+  if (state.finished) return;
+  state.finished = true;
+  commitBtn.disabled = true;
+
+  const sifted = state.rounds.map((r, i) => ({ r, i })).filter(o => o.r.sameBasis);
+  const keyRounds = sifted.slice(0, state.messageBits.length);
+
+  const aliceKeyBits = keyRounds.map(o => o.r.aliceBit).join("");
+  const bobKeyBits   = keyRounds.map(o => o.r.bobBit).join("");
+
+  $("finalKeyDisplay").textContent = aliceKeyBits.match(/.{1,5}/g).join("  ");
+
+  const ciphertext = xorString(state.messageBits, aliceKeyBits);
+  buildEncryptTable(state.message, state.messageBits, aliceKeyBits, ciphertext);
+
+  const decryptedBits = xorString(ciphertext, bobKeyBits);
+  const decryptedLetters = decryptedBits.match(/.{1,5}/g).map(b => BITS_TO_ALPHA[b] || "?").join("");
+  const matches = decryptedLetters === state.message;
+
+  // Mark mismatched key positions in the history
+  keyRounds.forEach(o => {
+    if (o.r.aliceBit !== o.r.bobBit) {
+      const colIndex = o.i + 2; // header label + zero-based index
+      ["histBobBit","histKeep"].forEach(rowId => {
+        const cell = $(rowId).children[colIndex];
+        if (cell) cell.classList.add("test-bad");
+      });
+    }
+  });
+
+  $("decryptDisplay").innerHTML = matches
+    ? `<span style="color: var(--ok);">${decryptedLetters}</span> — matches Alice's message ✓`
+    : `<span style="color: var(--bad);">${decryptedLetters}</span> — does <em>not</em> match "${state.message}".`;
+
+  const eveCheckBox = $("eveCheckBox");
+  const eveCheckText = $("eveCheckText");
+  if (matches) {
+    eveCheckText.innerHTML = `Bob's decoded message matches Alice's exactly. The channel looks <strong style="color: var(--ok);">secure</strong>.`;
+    eveCheckBox.style.borderColor = "var(--ok)";
+  } else {
+    const errors = [...aliceKeyBits].filter((b, i) => b !== bobKeyBits[i]).length;
+    const errPct = (errors / aliceKeyBits.length) * 100;
+    eveCheckText.innerHTML = `Bob's message is garbled. ${errors} of ${aliceKeyBits.length} key bits disagree (${errPct.toFixed(0)}%). <strong style="color: var(--bad);">Eavesdropper detected!</strong>`;
+    eveCheckBox.style.borderColor = "var(--bad)";
+  }
+
+  finishPanel.classList.remove("hidden");
+  finishPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function buildEncryptTable(message, msgBits, keyBits, cipher) {
+  const head = $("encryptTable").querySelector("thead");
+  const body = $("encryptTable").querySelector("tbody");
+  head.innerHTML = ""; body.innerHTML = "";
+  const letterRow = document.createElement("tr");
+  letterRow.innerHTML = `<th class="label-col">Letter</th>`;
+  for (let i = 0; i < message.length; i++) {
+    letterRow.innerHTML += `<th colspan="5" style="border-left: 1px solid var(--border);">${message[i]}</th>`;
+  }
+  head.appendChild(letterRow);
+  const mkRow = (label, bits) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<th class="label-col">${label}</th>`;
+    for (let i = 0; i < bits.length; i++) {
+      const sep = (i % 5 === 0) ? "border-left: 1px solid var(--border);" : "";
+      tr.innerHTML += `<td style="${sep}">${bits[i]}</td>`;
+    }
+    body.appendChild(tr);
+  };
+  mkRow("Data bit", msgBits);
+  mkRow("Key bit ⊕", keyBits);
+  mkRow("Ciphertext", cipher);
+}
+
+$("restartBtn").addEventListener("click", () => {
+  state.rounds = []; state.finished = false;
+  buildHistoryHeader();
+  progressPanel.classList.add("hidden");
+  genPanel.classList.add("hidden");
+  tablePanel.classList.add("hidden");
+  finishPanel.classList.add("hidden");
+  messageInput.focus();
+  messageInput.select();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// init
+syncEve();
+resetRoundDice();
+</script>
+</body>
+</html>

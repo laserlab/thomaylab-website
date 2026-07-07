@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BB84 Worksheets — BAA Outreach</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --rule: #999;
+    --plus: #1e6bb0;
+    --xbasis: #c47200;
+    --bit0: #1e7a3a;
+    --bit1: #b32450;
+    --shade: #f4f4f4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; color: var(--ink); font-family: Georgia, "Times New Roman", serif; }
+  body { padding: 18mm 16mm; }
+  .page {
+    max-width: 190mm;
+    margin: 0 auto;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+  /* Keep Step 4 decryption block together so it doesn't split across pages */
+  .keep-together { page-break-inside: avoid; break-inside: avoid; }
+
+  h1 { font-size: 22pt; margin: 0 0 4pt 0; font-weight: 700; }
+  h2 { font-size: 14pt; margin: 14pt 0 6pt 0; font-weight: 700; border-bottom: 1pt solid var(--ink); padding-bottom: 2pt; }
+  h3 { font-size: 11pt; margin: 8pt 0 4pt 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  p { font-size: 10.5pt; line-height: 1.45; margin: 4pt 0; }
+  ol, ul { font-size: 10.5pt; line-height: 1.5; margin: 4pt 0; padding-left: 18pt; }
+  small, .small { font-size: 9pt; color: var(--muted); }
+
+  .hdr {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1.5pt solid var(--ink); padding-bottom: 4pt; margin-bottom: 8pt;
+  }
+  .hdr .sub { font-size: 9pt; color: var(--muted); }
+  .hdr .role { font-size: 14pt; font-weight: 700; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; }
+  th, td { border: 0.6pt solid var(--rule); padding: 3pt 4pt; vertical-align: middle; text-align: center; }
+  th { background: var(--shade); font-weight: 700; font-size: 9pt; }
+  td.label-col { text-align: left; padding-left: 6pt; background: var(--shade); font-weight: 600; }
+
+  .badge-plus { color: var(--plus); font-weight: 700; }
+  .badge-x { color: var(--xbasis); font-weight: 700; }
+  .bit0 { color: var(--bit0); font-weight: 700; }
+  .bit1 { color: var(--bit1); font-weight: 700; }
+
+  .pill {
+    display: inline-block; padding: 1pt 6pt; border-radius: 8pt;
+    font-size: 9pt; font-weight: 700; border: 1pt solid currentColor;
+  }
+  .pill.plus { color: var(--plus); }
+  .pill.x { color: var(--xbasis); }
+
+  /* Worksheet cell rows — give them generous height so attendees can write */
+  table.worksheet td { height: 16pt; padding: 2pt 3pt; font-size: 10.5pt; }
+  table.worksheet td.example { background: #eef6ff; }
+  table.worksheet td.alphabit { letter-spacing: 0.15em; }
+  table.worksheet th { font-size: 8.5pt; padding: 4pt 3pt; line-height: 1.2; }
+  table.worksheet th .sub { font-weight: 400; font-size: 7.5pt; color: var(--muted); display: block; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10pt; }
+  .box {
+    border: 1pt solid var(--ink); border-radius: 4pt; padding: 6pt 8pt;
+    font-size: 10pt;
+  }
+  .box h3 { margin-top: 0; }
+  .keyrow { font-family: ui-monospace, "Courier New", monospace; font-size: 11pt; letter-spacing: 0.15em; }
+
+  /* Polarization diagrams */
+  .pol-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6pt; text-align: center; }
+  .pol-tile { border: 0.6pt solid var(--rule); border-radius: 4pt; padding: 6pt 4pt; font-size: 9pt; }
+  .pol-tile svg { display: block; margin: 0 auto 3pt; }
+
+  /* Alphabet table */
+  table.alphabet { font-size: 9pt; }
+  table.alphabet td { padding: 1.5pt 4pt; height: auto; }
+  table.alphabet td.letter { font-weight: 700; }
+  table.alphabet td.bits { font-family: ui-monospace, "Courier New", monospace; letter-spacing: 0.1em; }
+
+  @page { size: letter portrait; margin: 16mm 14mm; }
+  @media print {
+    html, body { width: 100%; }
+    body { padding: 0; margin: 0; }
+    .page { max-width: none; width: 100%; margin: 0; padding-top: 4mm; }
+    .no-print { display: none !important; }
+  }
+  .page-break { page-break-before: always; }
+  @media screen {
+    .page-break { margin-top: 24pt; padding-top: 18pt; border-top: 1pt dashed #ccc; }
+  }
+  .print-btn {
+    position: fixed; top: 10pt; right: 10pt;
+    background: #1e6bb0; color: white; border: none; border-radius: 4pt;
+    padding: 8pt 14pt; font-family: inherit; font-size: 11pt; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .print-btn:hover { background: #155488; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ Print all pages</button>
+
+<!-- ================ PAGE 1: COVER + INSTRUCTIONS ================ -->
+<div class="page">
+  <div class="hdr">
+    <div>
+      <h1>BB84 Quantum Key Distribution</h1>
+      <div class="sub">Buffalo Astronomical Association · Hands-on outreach worksheet</div>
+    </div>
+    <div class="role" style="text-align: right;">Instructions</div>
+  </div>
+
+  <p>This packet lets two players (<strong>Alice</strong> and <strong>Bob</strong>) run the BB84 protocol with dice and pen-and-paper. After enough rounds, they encrypt a short message with their shared secret key.</p>
+
+  <h2>What you need</h2>
+  <ul>
+    <li>One <strong>red 6-sided die</strong> (for choosing the basis: + or ×)</li>
+    <li>One <strong>black 8-sided die</strong> (for Alice's bits: 0 or 1)</li>
+    <li>The bench setup: laser, Alice's λ/2 plate, free-space link, Bob's λ/2 plate, PBS, two detectors</li>
+    <li>Two worksheets (Alice's and Bob's) plus the Sifting &amp; Encryption sheet</li>
+  </ul>
+
+  <h2>Dice conventions</h2>
+  <table style="width: auto;">
+    <tr>
+      <th>Red d6 (basis)</th><td>odd (1,3,5) → <span class="pill plus">+</span> basis</td><td>even (2,4,6) → <span class="pill x">×</span> basis</td>
+    </tr>
+    <tr>
+      <th>Black d8 (bit)</th><td>1–4 → bit <span class="bit0">0</span></td><td>5–8 → bit <span class="bit1">1</span></td>
+    </tr>
+  </table>
+
+  <h2>What Alice and Bob each do (per round)</h2>
+  <div class="two-col">
+    <div class="box">
+      <h3 style="color: var(--plus);">Alice (sender)</h3>
+      <ol>
+        <li>Roll red d6 → record basis (+ or ×)</li>
+        <li>Roll black d8 → record bit (0 or 1)</li>
+        <li>Look up the λ/2 angle below and set the waveplate</li>
+        <li>Fire the laser. Bob takes his reading.</li>
+      </ol>
+    </div>
+    <div class="box">
+      <h3 style="color: var(--xbasis);">Bob (receiver)</h3>
+      <ol>
+        <li>Roll red d6 → record basis (+ or ×)</li>
+        <li>Set his λ/2 to the angle for that basis</li>
+        <li>Watch which detector fires:<br/>det 0 → bit <span class="bit0">0</span> · det 1 → bit <span class="bit1">1</span></li>
+        <li>Record the bit on his sheet</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>λ/2 plate angles to set</h2>
+  <div class="two-col">
+    <div>
+      <h3>Alice</h3>
+      <table>
+        <tr><th>Basis</th><th>Bit</th><th>Output polarization</th><th>λ/2 physical angle</th></tr>
+        <tr><td><span class="badge-plus">+</span></td><td class="bit0">0</td><td>0° (horizontal)</td><td><strong>0°</strong></td></tr>
+        <tr><td><span class="badge-plus">+</span></td><td class="bit1">1</td><td>90° (vertical)</td><td><strong>45°</strong></td></tr>
+        <tr><td><span class="badge-x">×</span></td><td class="bit0">0</td><td>−45°</td><td><strong>−22.5°</strong></td></tr>
+        <tr><td><span class="badge-x">×</span></td><td class="bit1">1</td><td>+45°</td><td><strong>+22.5°</strong></td></tr>
+      </table>
+      <p class="small">A λ/2 plate rotates polarization by <strong>2× its physical angle</strong>, which is why each setting is half of the target.</p>
+    </div>
+    <div>
+      <h3>Bob</h3>
+      <table>
+        <tr><th>Basis</th><th>λ/2 physical angle</th><th>Effect</th></tr>
+        <tr><td><span class="badge-plus">+</span></td><td><strong>0°</strong></td><td>PBS already analyzes H vs V — no rotation</td></tr>
+        <tr><td><span class="badge-x">×</span></td><td><strong>22.5°</strong></td><td>Rotates ±45° back to 0°/90° so PBS reads it</td></tr>
+      </table>
+      <p class="small">Bob doesn't choose a bit — the detectors decide. det 0 fires → bit 0, det 1 fires → bit 1.</p>
+    </div>
+  </div>
+
+  <h2 class="page-break">Polarization quick reference</h2>
+  <div class="pol-grid">
+    <div class="pol-tile">
+      <svg width="50" height="50" viewBox="-30 -30 60 60">
+        <circle cx="0" cy="0" r="25" fill="none" stroke="#bbb" stroke-dasharray="2 2"/>
+        <line x1="-22" y1="0" x2="22" y2="0" stroke="#1e7a3a" stroke-width="3"/>
+      </svg>
+      <strong><span class="badge-plus">+</span> · bit <span class="bit0">0</span></strong><br/>0°
+    </div>
+    <div class="pol-tile">
+      <svg width="50" height="50" viewBox="-30 -30 60 60">
+        <circle cx="0" cy="0" r="25" fill="none" stroke="#bbb" stroke-dasharray="2 2"/>
+        <line x1="0" y1="-22" x2="0" y2="22" stroke="#b32450" stroke-width="3"/>
+      </svg>
+      <strong><span class="badge-plus">+</span> · bit <span class="bit1">1</span></strong><br/>90°
+    </div>
+    <div class="pol-tile">
+      <svg width="50" height="50" viewBox="-30 -30 60 60">
+        <circle cx="0" cy="0" r="25" fill="none" stroke="#bbb" stroke-dasharray="2 2"/>
+        <line x1="-16" y1="16" x2="16" y2="-16" stroke="#1e7a3a" stroke-width="3"/>
+      </svg>
+      <strong><span class="badge-x">×</span> · bit <span class="bit0">0</span></strong><br/>−45°
+    </div>
+    <div class="pol-tile">
+      <svg width="50" height="50" viewBox="-30 -30 60 60">
+        <circle cx="0" cy="0" r="25" fill="none" stroke="#bbb" stroke-dasharray="2 2"/>
+        <line x1="-16" y1="-16" x2="16" y2="16" stroke="#b32450" stroke-width="3"/>
+      </svg>
+      <strong><span class="badge-x">×</span> · bit <span class="bit1">1</span></strong><br/>+45°
+    </div>
+  </div>
+
+  <h2>5-bit alphabet (for encryption)</h2>
+  <table class="alphabet">
+    <tr>
+      <td class="letter">A</td><td class="bits">00000</td>
+      <td class="letter">B</td><td class="bits">00001</td>
+      <td class="letter">C</td><td class="bits">00010</td>
+      <td class="letter">D</td><td class="bits">00011</td>
+      <td class="letter">E</td><td class="bits">00100</td>
+      <td class="letter">F</td><td class="bits">00101</td>
+      <td class="letter">G</td><td class="bits">00110</td>
+    </tr>
+    <tr>
+      <td class="letter">H</td><td class="bits">00111</td>
+      <td class="letter">I</td><td class="bits">01000</td>
+      <td class="letter">J</td><td class="bits">01001</td>
+      <td class="letter">K</td><td class="bits">01010</td>
+      <td class="letter">L</td><td class="bits">01011</td>
+      <td class="letter">M</td><td class="bits">01100</td>
+      <td class="letter">N</td><td class="bits">01101</td>
+    </tr>
+    <tr>
+      <td class="letter">O</td><td class="bits">01110</td>
+      <td class="letter">P</td><td class="bits">01111</td>
+      <td class="letter">Q</td><td class="bits">10000</td>
+      <td class="letter">R</td><td class="bits">10001</td>
+      <td class="letter">S</td><td class="bits">10010</td>
+      <td class="letter">T</td><td class="bits">10011</td>
+      <td class="letter">U</td><td class="bits">10100</td>
+    </tr>
+    <tr>
+      <td class="letter">V</td><td class="bits">10101</td>
+      <td class="letter">W</td><td class="bits">10110</td>
+      <td class="letter">X</td><td class="bits">10111</td>
+      <td class="letter">Y</td><td class="bits">11000</td>
+      <td class="letter">Z</td><td class="bits">11001</td>
+      <td></td><td></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h2>After the rounds: sifting &amp; encryption</h2>
+  <ol>
+    <li>Alice and Bob compare their bases publicly (round by round). Keep rounds where the bases match; cross out rounds where they differ.</li>
+    <li>The kept bits form the <strong>sifted key</strong> — Alice's and Bob's should agree (in a clean channel they do).</li>
+    <li>Encode the message in 5-bit binary using the alphabet table.</li>
+    <li>XOR (binary add) the message with the key, bit by bit: 0+0=0, 0+1=1, 1+0=1, 1+1=0.</li>
+    <li>Bob decrypts the same way: ciphertext XOR key → original message.</li>
+  </ol>
+
+  <p class="small" style="margin-top: 12pt;">Binary XOR rules: <strong>0⊕0=0 · 0⊕1=1 · 1⊕0=1 · 1⊕1=0</strong></p>
+</div>
+
+<!-- ================ PAGE 2: ALICE WORKSHEET ================ -->
+<div class="page">
+  <div class="hdr">
+    <div>
+      <h1 style="color: var(--plus);">Alice's worksheet</h1>
+      <div class="sub">Record your dice rolls, set the λ/2 angle, fire the laser.</div>
+    </div>
+    <div class="role">ALICE</div>
+  </div>
+
+  <p><strong>Reminder.</strong> Roll the red d6 to pick a basis (odd → <span class="pill plus">+</span>, even → <span class="pill x">×</span>). Roll the black d8 to pick a bit (1–4 → <span class="bit0">0</span>, 5–8 → <span class="bit1">1</span>). Set your λ/2 to the angle in the rightmost column, then signal Bob.</p>
+
+  <table class="worksheet">
+    <thead>
+      <tr>
+        <th style="width: 6%;">#</th>
+        <th style="width: 13%;">Red d6<br/><span class="sub">(1–6)</span></th>
+        <th style="width: 13%;">Basis<br/><span class="sub">+ or ×</span></th>
+        <th style="width: 13%;">Black d8<br/><span class="sub">(1–8)</span></th>
+        <th style="width: 13%;">Bit<br/><span class="sub">0 or 1</span></th>
+        <th style="width: 21%;">λ/2 angle<br/><span class="sub">0° / 45° / −22.5° / +22.5°</span></th>
+        <th style="width: 21%;">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td class="example">3</td><td class="example"><span class="badge-plus">+</span></td><td class="example">7</td><td class="example bit1">1</td><td class="example"><strong>45°</strong></td><td class="example small">(example row)</td></tr>
+      <tr><td>2</td><td class="example">4</td><td class="example"><span class="badge-x">×</span></td><td class="example">2</td><td class="example bit0">0</td><td class="example"><strong>−22.5°</strong></td><td class="example small">(example row)</td></tr>
+      <!-- 28 blank rows: rounds 3-30 -->
+      <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>6</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>7</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>8</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>9</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>10</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>11</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>12</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>13</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>14</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>15</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>16</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>17</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>18</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>19</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>20</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>21</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>22</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>23</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>24</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>25</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>26</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>27</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>28</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>29</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>30</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <p class="small" style="margin-top: 8pt;">Quick reference: <span class="badge-plus">+</span>·<span class="bit0">0</span> → 0° · <span class="badge-plus">+</span>·<span class="bit1">1</span> → 45° · <span class="badge-x">×</span>·<span class="bit0">0</span> → −22.5° · <span class="badge-x">×</span>·<span class="bit1">1</span> → +22.5°</p>
+</div>
+
+<!-- ================ PAGE 3: BOB WORKSHEET ================ -->
+<div class="page">
+  <div class="hdr">
+    <div>
+      <h1 style="color: var(--xbasis);">Bob's worksheet</h1>
+      <div class="sub">Roll for a basis, set your λ/2, see which detector fires.</div>
+    </div>
+    <div class="role">BOB</div>
+  </div>
+
+  <p><strong>Reminder.</strong> Roll the red d6 to pick a basis (odd → <span class="pill plus">+</span>, even → <span class="pill x">×</span>). Set your λ/2 to <strong>0°</strong> for <span class="badge-plus">+</span>, or <strong>22.5°</strong> for <span class="badge-x">×</span>. When Alice fires the laser, see which detector goes off: <strong>det 0 → bit 0, det 1 → bit 1</strong>.</p>
+
+  <table class="worksheet">
+    <thead>
+      <tr>
+        <th style="width: 6%;">#</th>
+        <th style="width: 14%;">Red d6<br/><span class="sub">(1–6)</span></th>
+        <th style="width: 14%;">Basis<br/><span class="sub">+ or ×</span></th>
+        <th style="width: 18%;">λ/2 angle<br/><span class="sub">0° or 22.5°</span></th>
+        <th style="width: 17%;">Detector<br/><span class="sub">det 0 or det 1</span></th>
+        <th style="width: 11%;">Bit<br/><span class="sub">0 or 1</span></th>
+        <th style="width: 20%;">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td class="example">2</td><td class="example"><span class="badge-x">×</span></td><td class="example"><strong>22.5°</strong></td><td class="example">det 1</td><td class="example bit1">1</td><td class="example small">(example row)</td></tr>
+      <tr><td>2</td><td class="example">5</td><td class="example"><span class="badge-plus">+</span></td><td class="example"><strong>0°</strong></td><td class="example">det 0</td><td class="example bit0">0</td><td class="example small">(example row)</td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>6</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>7</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>8</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>9</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>10</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>11</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>12</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>13</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>14</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>15</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>16</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>17</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>18</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>19</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>20</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>21</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>22</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>23</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>24</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>25</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>26</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>27</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>28</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>29</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>30</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <p class="small" style="margin-top: 8pt;">Reminder: <span class="badge-plus">+</span> basis → λ/2 at 0° · <span class="badge-x">×</span> basis → λ/2 at 22.5°. The detector that fires tells you the bit.</p>
+</div>
+
+<!-- ================ PAGE 4: SIFTING & ENCRYPTION ================ -->
+<div class="page">
+  <div class="hdr">
+    <div>
+      <h1>Sifting &amp; encryption</h1>
+      <div class="sub">Compare bases publicly, build the sifted key, encrypt the message.</div>
+    </div>
+    <div class="role">BOTH</div>
+  </div>
+
+  <h2>Step 1 — Public basis comparison</h2>
+  <p>Copy each round's basis and bit from Alice's and Bob's worksheets. Mark "keep" (✓) if Alice and Bob used the same basis, "discard" (✗) otherwise.</p>
+
+  <table class="worksheet">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Alice<br/>basis</th>
+        <th>Alice<br/>bit</th>
+        <th>Bob<br/>basis</th>
+        <th>Bob<br/>bit</th>
+        <th>Same?<br/>✓ / ✗</th>
+        <th>#</th>
+        <th>Alice<br/>basis</th>
+        <th>Alice<br/>bit</th>
+        <th>Bob<br/>basis</th>
+        <th>Bob<br/>bit</th>
+        <th>Same?<br/>✓ / ✗</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td class="example"><span class="badge-plus">+</span></td><td class="example bit1">1</td><td class="example"><span class="badge-plus">+</span></td><td class="example bit1">1</td><td class="example">✓</td><td>16</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td class="example"><span class="badge-x">×</span></td><td class="example bit0">0</td><td class="example"><span class="badge-plus">+</span></td><td class="example bit1">1</td><td class="example">✗</td><td>17</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td>18</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td><td></td><td>19</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td><td></td><td>20</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>6</td><td></td><td></td><td></td><td></td><td></td><td>21</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>7</td><td></td><td></td><td></td><td></td><td></td><td>22</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>8</td><td></td><td></td><td></td><td></td><td></td><td>23</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>9</td><td></td><td></td><td></td><td></td><td></td><td>24</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>10</td><td></td><td></td><td></td><td></td><td></td><td>25</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>11</td><td></td><td></td><td></td><td></td><td></td><td>26</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>12</td><td></td><td></td><td></td><td></td><td></td><td>27</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>13</td><td></td><td></td><td></td><td></td><td></td><td>28</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>14</td><td></td><td></td><td></td><td></td><td></td><td>29</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>15</td><td></td><td></td><td></td><td></td><td></td><td>30</td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Step 2 — Sifted key</h2>
+  <p>Write Alice's bits from the kept (✓) rounds, in order, in the cells below. This is the <strong>shared secret key</strong> (Bob's bits in those same rounds should match).</p>
+  <table class="worksheet">
+    <tr>
+      <td class="label-col">Sifted key</td>
+      <td></td><td></td><td></td><td></td><td></td>
+      <td></td><td></td><td></td><td></td><td></td>
+      <td></td><td></td><td></td><td></td><td></td>
+      <td></td><td></td><td></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <div class="keep-together">
+    <h2>Step 3 — Encode the message</h2>
+    <p>Write the message letter-by-letter, then encode each letter in 5 bits using the alphabet table.</p>
+    <table class="worksheet">
+      <tr>
+        <td class="label-col" style="width: 14%;">Letter</td>
+        <td colspan="5" style="border-right: 1.5pt solid var(--ink);"></td>
+        <td colspan="5" style="border-right: 1.5pt solid var(--ink);"></td>
+        <td colspan="5" style="border-right: 1.5pt solid var(--ink);"></td>
+        <td colspan="5"></td>
+      </tr>
+      <tr>
+        <td class="label-col">Data bit</td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      <tr>
+        <td class="label-col">Key bit (⊕)</td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      <tr>
+        <td class="label-col">Ciphertext</td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+    </table>
+    <p class="small" style="margin-top: 4pt;">XOR rules: 0⊕0=0 · 0⊕1=1 · 1⊕0=1 · 1⊕1=0</p>
+  </div>
+
+  <div class="keep-together">
+    <h2>Step 4 — Decrypt (Bob)</h2>
+    <p>Bob XORs the ciphertext with his copy of the key, then looks up each 5-bit chunk in the alphabet table.</p>
+    <table class="worksheet">
+      <tr>
+        <td class="label-col" style="width: 14%;">Ciphertext</td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      <tr>
+        <td class="label-col">Key bit (⊕)</td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      <tr>
+        <td class="label-col">Decoded bit</td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td style="border-right: 1.5pt solid var(--ink);"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      <tr>
+        <td class="label-col">Letter</td>
+        <td colspan="5" style="border-right: 1.5pt solid var(--ink);"></td>
+        <td colspan="5" style="border-right: 1.5pt solid var(--ink);"></td>
+        <td colspan="5" style="border-right: 1.5pt solid var(--ink);"></td>
+        <td colspan="5"></td>
+      </tr>
+    </table>
+    <p class="small" style="margin-top: 6pt;">If Alice and Bob used a clean channel, the decoded message should match the original. If an eavesdropper was intercepting, ~25% of same-basis bits will disagree → the decoded message will be garbled.</p>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Why Eve gets caught — Step through the cases</title>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --bg-2: #121828;
+    --panel: #182135;
+    --panel-2: #1f2a44;
+    --border: #2c3a5c;
+    --text: #e6ecf7;
+    --muted: #8a98b6;
+    --accent: #5cc8ff;
+    --accent-2: #b388ff;
+    --plus: #5cc8ff;
+    --xbasis: #ffb86b;
+    --bit0: #6ee7a8;
+    --bit1: #ff7aa2;
+    --ok: #6ee7a8;
+    --warn: #ffd166;
+    --bad: #ff6b81;
+    --eve: #ff7aa2;
+    --beam: #b388ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { min-height: 100vh; padding: 24px; }
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;
+    gap: 16px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  header .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  header a { color: var(--accent); font-size: 13px; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+  }
+  .panel h2 { margin: 0 0 12px 0; font-size: 18px; }
+  .panel h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+
+  button {
+    background: var(--accent); color: #001828; border: none; border-radius: 8px;
+    padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+  button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  button.choice {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 14px; font-size: 14px;
+  }
+  button.choice.active.plus { background: rgba(92,200,255,0.2); border-color: var(--plus); color: var(--plus); }
+  button.choice.active.x    { background: rgba(255,184,107,0.2); border-color: var(--xbasis); color: var(--xbasis); }
+  button.choice.active.bit0 { background: rgba(110,231,168,0.2); border-color: var(--bit0); color: var(--bit0); }
+  button.choice.active.bit1 { background: rgba(255,122,162,0.2); border-color: var(--bit1); color: var(--bit1); }
+
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .pill.plus { background: rgba(92,200,255,0.15); color: var(--plus); }
+  .pill.x { background: rgba(255,184,107,0.15); color: var(--xbasis); }
+  .pill.eve { background: rgba(255,122,162,0.15); color: var(--eve); }
+  .badge-plus { color: var(--plus); font-weight: 700; }
+  .badge-x { color: var(--xbasis); font-weight: 700; }
+  .bit0 { color: var(--bit0); font-weight: 600; }
+  .bit1 { color: var(--bit1); font-weight: 600; }
+
+  .schematic-wrap {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; margin-top: 12px; overflow-x: auto;
+  }
+  .schematic-wrap svg { display: block; min-width: 900px; width: 100%; height: auto; }
+
+  .step-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+
+  .narration {
+    font-size: 14px; padding: 12px 16px; border-radius: 8px; margin-top: 12px;
+    background: var(--bg-2); border: 1px solid var(--border); line-height: 1.55;
+  }
+  .narration.same   { border-color: var(--ok); }
+  .narration.random { border-color: var(--warn); }
+  .narration.match  { border-color: var(--ok); }
+  .narration.mismatch { border-color: var(--bad); }
+
+  .case-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px;
+  }
+  .case-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(92,200,255,0.2); }
+  .case-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .case-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .case-card .desc { font-size: 12px; margin-top: 4px; }
+  .case-card .outcome { font-size: 12px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px;
+  }
+  .stat-tile {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .stat-tile .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-tile .v { font-size: 18px; font-weight: 700; margin-top: 2px; }
+
+  footer { color: var(--muted); font-size: 11px; text-align: center; margin-top: 32px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div>
+      <h1>Why Eve gets caught</h1>
+      <div class="sub">A walkthrough of all four basis-choice cases</div>
+    </div>
+    <div><a href="index.html">← back to main demo</a></div>
+  </header>
+
+  <!-- Step 1: Alice picks -->
+  <div class="panel">
+    <h2>1 · Alice's choice</h2>
+    <p style="margin-top:0; color: var(--muted); font-size: 13px;">Pick a basis and bit for Alice. The same Alice photon is sent into all four cases below.</p>
+    <div class="row">
+      <div>
+        <div class="label" style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Basis</div>
+        <div style="display: flex; gap: 6px;">
+          <button class="choice plus" data-aliceb="+">+ basis</button>
+          <button class="choice x" data-aliceb="x">× basis</button>
+        </div>
+      </div>
+      <div>
+        <div class="label" style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Bit</div>
+        <div style="display: flex; gap: 6px;">
+          <button class="choice bit0" data-alicebit="0">0</button>
+          <button class="choice bit1" data-alicebit="1">1</button>
+        </div>
+      </div>
+      <div id="aliceSummary" style="font-size: 14px; color: var(--muted);"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Case selector -->
+  <div class="panel">
+    <h2>2 · Pick a case to step through</h2>
+    <p style="margin-top: 0; color: var(--muted); font-size: 13px;">Eve guesses one of two bases (she doesn't know Alice's). Bob also picks a basis. There are four combinations:</p>
+    <div class="case-grid" id="caseGrid">
+      <!-- four cards filled by JS -->
+    </div>
+  </div>
+
+  <!-- Step 3: Animation -->
+  <div class="panel" id="walkPanel">
+    <h2>3 · Walk through the optics</h2>
+
+    <div class="schematic-wrap">
+      <svg id="schematic" viewBox="0 0 1000 280" width="100%" height="280">
+        <defs>
+          <marker id="beamArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--beam)"/></marker>
+          <marker id="polArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker>
+        </defs>
+
+        <!-- Region labels -->
+        <text x="100" y="245" text-anchor="middle" fill="var(--accent)" font-size="12" font-weight="600">ALICE</text>
+        <line x1="20" y1="225" x2="180" y2="225" stroke="var(--accent)" stroke-width="1" opacity="0.4"/>
+        <text x="450" y="245" text-anchor="middle" fill="var(--eve)" font-size="12" font-weight="600">EVE</text>
+        <line x1="320" y1="225" x2="580" y2="225" stroke="var(--eve)" stroke-width="1" opacity="0.4"/>
+        <text x="830" y="245" text-anchor="middle" fill="var(--accent-2)" font-size="12" font-weight="600">BOB</text>
+        <line x1="700" y1="225" x2="980" y2="225" stroke="var(--accent-2)" stroke-width="1" opacity="0.4"/>
+
+        <!-- Beams -->
+        <line x1="60" y1="140" x2="160" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)"/>
+        <line x1="200" y1="140" x2="340" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)"/>
+        <line id="beam_eveAnalyze" x1="380" y1="140" x2="420" y2="140" stroke="var(--eve)" stroke-width="2.5" opacity="0"/>
+        <line id="beam_evePbsDet0" x1="440" y1="140" x2="500" y2="140" stroke="var(--eve)" stroke-width="2.5" opacity="0"/>
+        <line id="beam_evePbsDet1" x1="430" y1="130" x2="430" y2="80" stroke="var(--eve)" stroke-width="2.5" opacity="0"/>
+        <line id="beam_eveResend" x1="540" y1="140" x2="600" y2="140" stroke="var(--eve)" stroke-width="2.5" marker-end="url(#beamArrow)" opacity="0"/>
+        <line id="beam_eveOut" x1="640" y1="140" x2="780" y2="140" stroke="var(--eve)" stroke-width="2.5" marker-end="url(#beamArrow)" opacity="0"/>
+        <line x1="820" y1="140" x2="880" y2="140" stroke="var(--beam)" stroke-width="2.5" marker-end="url(#beamArrow)"/>
+        <line id="beam_bobPbsDet0" x1="900" y1="140" x2="960" y2="140" stroke="var(--beam)" stroke-width="2.5" opacity="0"/>
+        <line id="beam_bobPbsDet1" x1="890" y1="130" x2="890" y2="80" stroke="var(--beam)" stroke-width="2.5" opacity="0"/>
+
+        <!-- ALICE: laser + HWP -->
+        <rect x="20" y="125" width="40" height="30" rx="4" fill="#3a1818" stroke="var(--bad)"/>
+        <circle cx="55" cy="140" r="3" fill="var(--beam)"/>
+        <text x="40" y="180" text-anchor="middle" fill="var(--muted)" font-size="11">405 nm laser</text>
+        <g id="aliceHWP">
+          <circle cx="180" cy="140" r="20" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+          <line id="aliceHWPaxis" x1="160" y1="140" x2="200" y2="140" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="180" y="110" text-anchor="middle" fill="var(--accent)" font-size="11" font-weight="600">Alice λ/2</text>
+        </g>
+
+        <!-- Polarization arrow after Alice -->
+        <g id="travelPol1" opacity="0">
+          <circle cx="270" cy="140" r="18" fill="var(--bg)" stroke="var(--border)" stroke-dasharray="2 2"/>
+          <line id="travelArrow1" x1="255" y1="140" x2="285" y2="140" stroke="var(--bit0)" stroke-width="2.5" stroke-linecap="round" marker-start="url(#polArrow)" marker-end="url(#polArrow)" color="var(--bit0)"/>
+          <text x="270" y="180" text-anchor="middle" fill="var(--muted)" font-size="10" id="travelLabel1">Alice→</text>
+        </g>
+
+        <!-- EVE: HWP + PBS + 2 detectors + resend laser + HWP -->
+        <g id="eveBasisBadge" opacity="0">
+          <circle cx="360" cy="55" r="16" fill="var(--bg)" stroke="var(--plus)" stroke-width="2"/>
+          <text id="eveBasisBadgeText" x="360" y="63" text-anchor="middle" font-size="22" font-weight="700" fill="var(--plus)">+</text>
+        </g>
+        <g id="eveHWP">
+          <circle cx="360" cy="140" r="20" fill="var(--panel)" stroke="var(--eve)" stroke-width="2"/>
+          <line id="eveHWPaxis" x1="340" y1="140" x2="380" y2="140" stroke="var(--eve)" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="360" y="110" text-anchor="middle" fill="var(--eve)" font-size="11" font-weight="600">Eve λ/2</text>
+        </g>
+        <g id="evePBS">
+          <rect x="420" y="120" width="40" height="40" fill="rgba(255,122,162,0.10)" stroke="var(--eve)" stroke-width="1.5"/>
+          <line x1="420" y1="160" x2="460" y2="120" stroke="var(--eve)" stroke-width="1.5"/>
+          <text x="440" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">PBS</text>
+        </g>
+        <g>
+          <rect x="500" y="130" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+          <text x="515" y="125" text-anchor="middle" fill="var(--muted)" font-size="10">det 0</text>
+        </g>
+        <g>
+          <rect x="415" y="60" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+          <text x="430" y="55" text-anchor="middle" fill="var(--muted)" font-size="10">det 1</text>
+        </g>
+        <g>
+          <rect x="540" y="125" width="20" height="30" rx="3" fill="#3a1818" stroke="var(--eve)"/>
+          <text x="550" y="180" text-anchor="middle" fill="var(--muted)" font-size="9">resend</text>
+        </g>
+        <g id="eveOutHWP">
+          <circle cx="620" cy="140" r="20" fill="var(--panel)" stroke="var(--eve)" stroke-width="2"/>
+          <line id="eveOutHWPaxis" x1="600" y1="140" x2="640" y2="140" stroke="var(--eve)" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="620" y="110" text-anchor="middle" fill="var(--eve)" font-size="11" font-weight="600">Eve λ/2</text>
+        </g>
+
+        <!-- Polarization arrow after Eve resend -->
+        <g id="travelPol2" opacity="0">
+          <circle cx="710" cy="140" r="18" fill="var(--bg)" stroke="var(--eve)" stroke-dasharray="2 2"/>
+          <line id="travelArrow2" x1="695" y1="140" x2="725" y2="140" stroke="var(--bit0)" stroke-width="2.5" stroke-linecap="round" marker-start="url(#polArrow)" marker-end="url(#polArrow)" color="var(--bit0)"/>
+          <text x="710" y="180" text-anchor="middle" fill="var(--eve)" font-size="10" id="travelLabel2">Eve→</text>
+        </g>
+
+        <!-- BOB: HWP + PBS + 2 detectors -->
+        <g id="bobBasisBadge" opacity="0">
+          <circle cx="800" cy="55" r="16" fill="var(--bg)" stroke="var(--plus)" stroke-width="2"/>
+          <text id="bobBasisBadgeText" x="800" y="63" text-anchor="middle" font-size="22" font-weight="700" fill="var(--plus)">+</text>
+        </g>
+        <g id="bobHWP">
+          <circle cx="800" cy="140" r="20" fill="var(--panel)" stroke="var(--accent-2)" stroke-width="2"/>
+          <line id="bobHWPaxis" x1="780" y1="140" x2="820" y2="140" stroke="var(--accent-2)" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="800" y="110" text-anchor="middle" fill="var(--accent-2)" font-size="11" font-weight="600">Bob λ/2</text>
+        </g>
+        <g id="bobPBS">
+          <rect x="880" y="120" width="40" height="40" fill="rgba(179,136,255,0.10)" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <line x1="880" y1="160" x2="920" y2="120" stroke="var(--accent-2)" stroke-width="1.5"/>
+          <text x="900" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">PBS</text>
+        </g>
+        <g>
+          <rect x="960" y="130" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+          <text x="975" y="125" text-anchor="middle" fill="var(--muted)" font-size="10">det 0</text>
+        </g>
+        <g>
+          <rect x="875" y="60" width="30" height="20" rx="3" fill="var(--panel)" stroke="var(--border)"/>
+          <text x="890" y="55" text-anchor="middle" fill="var(--muted)" font-size="10">det 1</text>
+        </g>
+
+        <!-- Photon dots (real, animated) -->
+        <circle id="photonAliceDot" cx="60" cy="140" r="7" fill="#6ee7a8" opacity="0" stroke="#fff" stroke-width="0.5"/>
+        <circle id="photonEveDot" cx="650" cy="140" r="7" fill="#6ee7a8" opacity="0" stroke="#fff" stroke-width="0.5"/>
+
+        <!-- Ghost photons + probability labels (shown only when measurement is random) -->
+        <!-- Eve ghosts -->
+        <circle id="ghostEveDet0" cx="500" cy="140" r="6" fill="var(--bit0)" opacity="0"/>
+        <circle id="ghostEveDet1" cx="430" cy="80"  r="6" fill="var(--bit1)" opacity="0"/>
+        <text id="ghostEveLabel0" x="500" y="120" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bit0)" opacity="0">P = ½</text>
+        <text id="ghostEveLabel1" x="455" y="74" text-anchor="start" font-size="11" font-weight="700" fill="var(--bit1)" opacity="0">P = ½</text>
+        <!-- Bob ghosts -->
+        <circle id="ghostBobDet0" cx="960" cy="140" r="6" fill="var(--bit0)" opacity="0"/>
+        <circle id="ghostBobDet1" cx="890" cy="80"  r="6" fill="var(--bit1)" opacity="0"/>
+        <text id="ghostBobLabel0" x="960" y="120" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bit0)" opacity="0">P = ½</text>
+        <text id="ghostBobLabel1" x="915" y="74" text-anchor="start" font-size="11" font-weight="700" fill="var(--bit1)" opacity="0">P = ½</text>
+      </svg>
+    </div>
+
+    <div class="narration" id="narration">Pick Alice's basis + bit, then pick a case above.</div>
+
+    <div class="step-controls">
+      <button class="secondary" id="prevBtn" disabled>← Previous step</button>
+      <button id="nextBtn" disabled>Next step →</button>
+      <button class="secondary" id="replayBtn" disabled>↻ Replay this case</button>
+      <span style="flex:1"></span>
+      <span style="color: var(--muted); font-size: 12px;" id="stepLabel">— / 5</span>
+    </div>
+
+    <!-- Histogram of replays -->
+    <div id="histPanel" class="hidden" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border);">
+      <h3 style="margin: 0 0 8px 0;">Replay outcomes (this case)</h3>
+      <p style="margin: 0 0 10px 0; font-size: 12px; color: var(--muted);">Each replay re-rolls the random projections. Bars track how many times each detector fired across all replays of the current case.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <!-- Eve histogram -->
+        <div>
+          <div style="font-size: 12px; color: var(--eve); font-weight: 600; margin-bottom: 6px;">Eve's measurement <span id="histEveTag" style="color: var(--muted); font-weight: 400;"></span></div>
+          <div style="display: flex; gap: 10px; align-items: flex-end; height: 90px;">
+            <div style="flex:1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="font-size: 11px; color: var(--bit0);" id="histEve0Count">0</div>
+              <div id="histEve0Bar" style="width: 70%; background: var(--bit0); border-radius: 4px 4px 0 0; height: 0%; transition: height 0.3s;"></div>
+              <div style="font-size: 11px; color: var(--muted);">det 0</div>
+            </div>
+            <div style="flex:1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="font-size: 11px; color: var(--bit1);" id="histEve1Count">0</div>
+              <div id="histEve1Bar" style="width: 70%; background: var(--bit1); border-radius: 4px 4px 0 0; height: 0%; transition: height 0.3s;"></div>
+              <div style="font-size: 11px; color: var(--muted);">det 1</div>
+            </div>
+          </div>
+        </div>
+        <!-- Bob histogram -->
+        <div>
+          <div style="font-size: 12px; color: var(--accent-2); font-weight: 600; margin-bottom: 6px;">Bob's measurement <span id="histBobTag" style="color: var(--muted); font-weight: 400;"></span></div>
+          <div style="display: flex; gap: 10px; align-items: flex-end; height: 90px;">
+            <div style="flex:1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="font-size: 11px; color: var(--bit0);" id="histBob0Count">0</div>
+              <div id="histBob0Bar" style="width: 70%; background: var(--bit0); border-radius: 4px 4px 0 0; height: 0%; transition: height 0.3s;"></div>
+              <div style="font-size: 11px; color: var(--muted);">det 0</div>
+            </div>
+            <div style="flex:1; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <div style="font-size: 11px; color: var(--bit1);" id="histBob1Count">0</div>
+              <div id="histBob1Bar" style="width: 70%; background: var(--bit1); border-radius: 4px 4px 0 0; height: 0%; transition: height 0.3s;"></div>
+              <div style="font-size: 11px; color: var(--muted);">det 1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 8px; font-size: 12px; color: var(--muted);" id="histSummary">Total replays: 0</div>
+    </div>
+  </div>
+
+  <!-- Stats: roll the case many times to see the probability -->
+  <div class="panel">
+    <h2>4 · Run this case 1000 times — what fraction does Bob get right?</h2>
+    <p style="margin-top:0; color: var(--muted); font-size: 13px;">When Eve's basis matches Alice's, her measurement is deterministic and Bob's outcome (when his basis also matches) is correct. When Eve's basis disagrees with Alice's, her measurement is random — and that's what corrupts the bit.</p>
+    <div class="row" style="gap: 10px;">
+      <button id="runManyBtn">Run 1000 trials</button>
+      <span style="color: var(--muted); font-size: 12px;" id="manyHint">Pick a case first.</span>
+    </div>
+    <div class="stats">
+      <div class="stat-tile"><div class="k">Trials</div><div class="v" id="statTrials">—</div></div>
+      <div class="stat-tile"><div class="k">Bob = Alice (correct)</div><div class="v" id="statCorrect">—</div></div>
+      <div class="stat-tile"><div class="k">Bob ≠ Alice (error)</div><div class="v" id="statError">—</div></div>
+      <div class="stat-tile"><div class="k">Error rate</div><div class="v" id="statRate">—</div></div>
+    </div>
+  </div>
+
+  <footer>Companion to <a href="index.html" style="color: var(--accent);">main demo</a> — explains the four eavesdropping cases.</footer>
+
+</div>
+
+<script>
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+
+// ---- Polarization helpers ----
+function polAngle(basis, bit) {
+  if (basis === "+") return bit === 0 ? 0 : 90;
+  return bit === 0 ? -45 : 45;
+}
+function hwpPhysicalAngle(outAngleDeg) { return outAngleDeg / 2; }
+function bobOrEveHwpPhysical(basis) { return basis === "+" ? 0 : 22.5; }
+
+// Simulate Eve's measurement: deterministic if basis matches Alice, random otherwise.
+function simulateEveMeasure(aliceBasis, aliceBit, eveBasis) {
+  if (eveBasis === aliceBasis) return aliceBit;
+  return Math.random() < 0.5 ? 0 : 1;
+}
+// Simulate Bob's measurement of an incoming polarization (basis+bit pair).
+function simulateBobMeasure(incBasis, incBit, bobBasis) {
+  if (incBasis === bobBasis) return incBit;
+  return Math.random() < 0.5 ? 0 : 1;
+}
+
+// ---- State ----
+const state = {
+  aliceBasis: "+",
+  aliceBit: 0,
+  caseIdx: null,
+  step: 0,
+  eveBit: null,
+  bobBit: null,
+  // Histogram of replays for the currently-selected case
+  hist: { eve0: 0, eve1: 0, bob0: 0, bob1: 0, total: 0 },
+};
+
+// Cases: all four (Eve, Bob) combos
+const CASES = [
+  { eve: "+", bob: "+" },
+  { eve: "+", bob: "x" },
+  { eve: "x", bob: "+" },
+  { eve: "x", bob: "x" },
+];
+
+// ---- DOM refs ----
+const aliceSummary = $("aliceSummary");
+const caseGrid = $("caseGrid");
+const narration = $("narration");
+const stepLabel = $("stepLabel");
+const prevBtn = $("prevBtn"), nextBtn = $("nextBtn"), replayBtn = $("replayBtn");
+const photonAliceDot = $("photonAliceDot");
+const photonEveDot = $("photonEveDot");
+
+// ---- Visual helpers ----
+function setHWPLine(lineEl, physicalAngleDeg) {
+  const cx = +lineEl.parentNode.querySelector("circle").getAttribute("cx");
+  const cy = +lineEl.parentNode.querySelector("circle").getAttribute("cy");
+  const r = +lineEl.parentNode.querySelector("circle").getAttribute("r");
+  const a = -physicalAngleDeg * Math.PI / 180;
+  const dx = Math.cos(a) * r, dy = Math.sin(a) * r;
+  lineEl.setAttribute("x1", cx - dx); lineEl.setAttribute("y1", cy - dy);
+  lineEl.setAttribute("x2", cx + dx); lineEl.setAttribute("y2", cy + dy);
+}
+function setBasisBadge(badgeEl, textEl, basis) {
+  if (basis === null) { badgeEl.setAttribute("opacity", "0"); return; }
+  const isPlus = basis === "+";
+  const color = isPlus ? "var(--plus)" : "var(--xbasis)";
+  badgeEl.setAttribute("opacity", "1");
+  badgeEl.querySelector("circle").setAttribute("stroke", color);
+  textEl.setAttribute("fill", color);
+  textEl.textContent = isPlus ? "+" : "×";
+}
+function setTravelArrow(groupEl, lineEl, labelEl, cx, angleDeg, color, basis, label) {
+  groupEl.setAttribute("opacity", "1");
+  const cy = 140, r = 14;
+  const a = -angleDeg * Math.PI / 180;
+  const dx = Math.cos(a) * r, dy = Math.sin(a) * r;
+  lineEl.setAttribute("x1", cx - dx); lineEl.setAttribute("y1", cy - dy);
+  lineEl.setAttribute("x2", cx + dx); lineEl.setAttribute("y2", cy + dy);
+  lineEl.setAttribute("stroke", color);
+  lineEl.setAttribute("color", color);
+  labelEl.setAttribute("fill", color);
+  labelEl.textContent = `${label} ${angleDeg}° (${basis === "+" ? "+" : "×"})`;
+}
+function clearTravelArrow(groupEl) { groupEl.setAttribute("opacity", "0"); }
+
+// ---- Photon animation (single-shot) ----
+let photonShotToken = 0;
+function pointAlongPath(points, t) {
+  if (t <= 0) return points[0];
+  if (t >= 1) return points[points.length - 1];
+  const segLens = []; let total = 0;
+  for (let i = 0; i < points.length - 1; i++) {
+    const dx = points[i+1].x - points[i].x;
+    const dy = points[i+1].y - points[i].y;
+    const L = Math.hypot(dx, dy);
+    segLens.push(L); total += L;
+  }
+  let target = t * total;
+  for (let i = 0; i < segLens.length; i++) {
+    if (target <= segLens[i]) {
+      const f = segLens[i] === 0 ? 0 : target / segLens[i];
+      return { x: points[i].x + (points[i+1].x - points[i].x) * f, y: points[i].y + (points[i+1].y - points[i].y) * f };
+    }
+    target -= segLens[i];
+  }
+  return points[points.length - 1];
+}
+function shootPhoton(dotEl, path, color, durationMs, token) {
+  return new Promise((resolve) => {
+    dotEl.setAttribute("fill", color);
+    dotEl.setAttribute("opacity", "1");
+    let start = null;
+    function frame(ts) {
+      if (token !== photonShotToken) { resolve(); return; }
+      if (start === null) start = ts;
+      const t = Math.min(1, (ts - start) / durationMs);
+      const p = pointAlongPath(path, t);
+      dotEl.setAttribute("cx", p.x);
+      dotEl.setAttribute("cy", p.y);
+      if (t < 1) requestAnimationFrame(frame);
+      else setTimeout(() => { if (token === photonShotToken) dotEl.setAttribute("opacity", "0"); resolve(); }, 200);
+    }
+    requestAnimationFrame(frame);
+  });
+}
+function stopPhotons() {
+  photonShotToken++;
+  photonAliceDot.setAttribute("opacity", "0");
+  photonEveDot.setAttribute("opacity", "0");
+  hideAllGhosts();
+}
+function colorForBit(b) { return b === 0 ? "#6ee7a8" : "#ff7aa2"; }
+
+// ---- Ghost photons + wobble ----
+function hideAllGhosts() {
+  ["ghostEveDet0","ghostEveDet1","ghostEveLabel0","ghostEveLabel1",
+   "ghostBobDet0","ghostBobDet1","ghostBobLabel0","ghostBobLabel1"].forEach(id => {
+    $(id).setAttribute("opacity", "0");
+  });
+}
+
+// PBS-centered wobble: a single photon dot at the PBS center jitters between the
+// two output paths (transmit / reflect), visualizing the projection moment.
+// `cx, cy` is the PBS center; `bit0Endpoint`/`bit1Endpoint` are {x,y} the dot
+// drifts toward when the projection picks 0 or 1.
+function wobbleAtPBS(dotEl, pbsCx, pbsCy, bit0Endpoint, bit1Endpoint, durationMs, token) {
+  return new Promise((resolve) => {
+    dotEl.setAttribute("opacity", "1");
+    let start = null;
+    function frame(ts) {
+      if (token !== photonShotToken) { resolve(); return; }
+      if (start === null) start = ts;
+      const t = (ts - start) / durationMs;
+      // Oscillate ~3 Hz, small excursion (~25% of the way to each endpoint)
+      const phase = Math.sin(t * 2 * Math.PI * 3);  // [-1, 1]
+      const amp = 0.25;
+      let target;
+      if (phase >= 0) {
+        const f = phase * amp;
+        target = { x: pbsCx + (bit0Endpoint.x - pbsCx) * f, y: pbsCy + (bit0Endpoint.y - pbsCy) * f };
+      } else {
+        const f = -phase * amp;
+        target = { x: pbsCx + (bit1Endpoint.x - pbsCx) * f, y: pbsCy + (bit1Endpoint.y - pbsCy) * f };
+      }
+      dotEl.setAttribute("cx", target.x);
+      dotEl.setAttribute("cy", target.y);
+      if (t < 1) requestAnimationFrame(frame);
+      else { dotEl.setAttribute("cx", pbsCx); dotEl.setAttribute("cy", pbsCy); resolve(); }
+    }
+    requestAnimationFrame(frame);
+  });
+}
+
+function showGhosts(side) {
+  // side: "eve" or "bob"
+  if (side === "eve") {
+    ["ghostEveDet0","ghostEveDet1","ghostEveLabel0","ghostEveLabel1"].forEach(id => $(id).setAttribute("opacity", "0.55"));
+  } else {
+    ["ghostBobDet0","ghostBobDet1","ghostBobLabel0","ghostBobLabel1"].forEach(id => $(id).setAttribute("opacity", "0.55"));
+  }
+}
+function hideGhostsExcept(side, winningBit) {
+  // Fade the loser to 0, keep the winner faded (the real photon will fly to it).
+  const loseBit = winningBit === 0 ? 1 : 0;
+  if (side === "eve") {
+    $(`ghostEveDet${loseBit}`).setAttribute("opacity", "0");
+    $(`ghostEveLabel${loseBit}`).setAttribute("opacity", "0");
+    $(`ghostEveDet${winningBit}`).setAttribute("opacity", "0");
+    $(`ghostEveLabel${winningBit}`).setAttribute("opacity", "0");
+  } else {
+    $(`ghostBobDet${loseBit}`).setAttribute("opacity", "0");
+    $(`ghostBobLabel${loseBit}`).setAttribute("opacity", "0");
+    $(`ghostBobDet${winningBit}`).setAttribute("opacity", "0");
+    $(`ghostBobLabel${winningBit}`).setAttribute("opacity", "0");
+  }
+}
+
+// ---- Histogram ----
+function resetHistogram() {
+  state.hist = { eve0: 0, eve1: 0, bob0: 0, bob1: 0, total: 0 };
+  renderHistogram();
+}
+function recordHistogram(eveBit, bobBit, eveRandom, bobRandom) {
+  // Only count outcomes that were *random* (genuinely informative for the histogram).
+  // For deterministic outcomes we still record so attendees see "always det X" pattern.
+  if (eveBit === 0) state.hist.eve0++; else state.hist.eve1++;
+  if (bobBit === 0) state.hist.bob0++; else state.hist.bob1++;
+  state.hist.total++;
+  renderHistogram(eveRandom, bobRandom);
+}
+function renderHistogram(eveRandom, bobRandom) {
+  const h = state.hist;
+  const T = Math.max(1, h.total);
+  const setBar = (id, count) => {
+    $(id).style.height = (count / T * 100) + "%";
+  };
+  setBar("histEve0Bar", h.eve0);
+  setBar("histEve1Bar", h.eve1);
+  setBar("histBob0Bar", h.bob0);
+  setBar("histBob1Bar", h.bob1);
+  $("histEve0Count").textContent = h.eve0;
+  $("histEve1Count").textContent = h.eve1;
+  $("histBob0Count").textContent = h.bob0;
+  $("histBob1Count").textContent = h.bob1;
+  $("histEveTag").textContent = eveRandom === undefined ? "" : (eveRandom ? "(random — wrong basis)" : "(deterministic — same basis)");
+  $("histBobTag").textContent = bobRandom === undefined ? "" : (bobRandom ? "(random — wrong basis vs incoming)" : "(deterministic — same basis as incoming)");
+  $("histSummary").textContent = `Total replays: ${h.total}`;
+}
+
+// ---- Alice picker ----
+function setAliceBasis(b) {
+  state.aliceBasis = b;
+  document.querySelectorAll("[data-aliceb]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.aliceb === b);
+    btn.classList.toggle("plus", b === "+");
+    btn.classList.toggle("x", b === "x");
+  });
+  refreshAlice();
+  resetCaseRun();
+}
+function setAliceBit(b) {
+  state.aliceBit = b;
+  document.querySelectorAll("[data-alicebit]").forEach(btn => {
+    btn.classList.toggle("active", +btn.dataset.alicebit === b);
+    btn.classList.toggle("bit0", b === 0);
+    btn.classList.toggle("bit1", b === 1);
+  });
+  refreshAlice();
+  resetCaseRun();
+}
+function refreshAlice() {
+  const ang = polAngle(state.aliceBasis, state.aliceBit);
+  aliceSummary.innerHTML = `Alice sends bit <span class="${state.aliceBit === 0 ? 'bit0' : 'bit1'}">${state.aliceBit}</span> in ${state.aliceBasis === '+' ? '<span class="badge-plus">+</span>' : '<span class="badge-x">×</span>'} basis → polarization at <strong>${ang}°</strong>.`;
+  setHWPLine($("aliceHWPaxis"), hwpPhysicalAngle(ang));
+}
+
+document.querySelectorAll("[data-aliceb]").forEach(btn => btn.addEventListener("click", () => setAliceBasis(btn.dataset.aliceb)));
+document.querySelectorAll("[data-alicebit]").forEach(btn => btn.addEventListener("click", () => setAliceBit(+btn.dataset.alicebit)));
+
+// ---- Case grid ----
+function buildCaseGrid() {
+  caseGrid.innerHTML = "";
+  CASES.forEach((c, i) => {
+    const card = document.createElement("div");
+    card.className = "case-card";
+    card.dataset.caseIdx = i;
+    card.innerHTML = `
+      <div class="label">Case ${i+1}</div>
+      <div class="desc">Eve picks ${c.eve === '+' ? '<span class="badge-plus">+</span>' : '<span class="badge-x">×</span>'} · Bob picks ${c.bob === '+' ? '<span class="badge-plus">+</span>' : '<span class="badge-x">×</span>'}</div>
+      <div class="outcome" id="caseOutcome${i}">—</div>
+    `;
+    card.addEventListener("click", () => selectCase(i));
+    caseGrid.appendChild(card);
+  });
+  refreshCaseOutcomes();
+}
+function refreshCaseOutcomes() {
+  CASES.forEach((c, i) => {
+    const out = $(`caseOutcome${i}`);
+    const eveSame = c.eve === state.aliceBasis;
+    const bobSame = c.bob === state.aliceBasis;
+    let txt = "";
+    if (eveSame) {
+      txt = `Eve's basis matches Alice → Eve reads correctly. `;
+      if (bobSame) txt += `Bob's basis matches → <span style="color: var(--ok);">Bob = Alice (always)</span>.`;
+      else         txt += `Bob's basis differs → <span style="color: var(--warn);">Bob random (50/50).</span>`;
+    } else {
+      txt = `Eve's basis differs from Alice → Eve reads <span style="color: var(--warn);">randomly (50/50)</span>. She re-emits in her own basis. `;
+      if (bobSame) txt += `Bob's basis matches Alice → he sees Eve's wrong-basis photon → <span style="color: var(--bad);">Bob disagrees with Alice 50% of the time.</span>`;
+      else         txt += `Bob's basis differs from Alice anyway — these rounds get discarded after sifting.`;
+    }
+    out.innerHTML = txt;
+  });
+}
+function selectCase(i) {
+  state.caseIdx = i;
+  document.querySelectorAll(".case-card").forEach((card, idx) => card.classList.toggle("active", idx === i));
+  state.step = 0;
+  const c = CASES[i];
+  state.eveBit = simulateEveMeasure(state.aliceBasis, state.aliceBit, c.eve);
+  state.bobBit = simulateBobMeasure(c.eve, state.eveBit, c.bob);
+  // Reset histogram for the new case and record this first run
+  resetHistogram();
+  const eveRandom = c.eve !== state.aliceBasis;
+  const bobRandom = c.bob !== c.eve;
+  recordHistogram(state.eveBit, state.bobBit, eveRandom, bobRandom);
+  $("histPanel").classList.remove("hidden");
+  refreshStepUI();
+  goToStep(0);
+}
+
+function resetCaseRun() {
+  if (state.caseIdx !== null) {
+    const c = CASES[state.caseIdx];
+    state.eveBit = simulateEveMeasure(state.aliceBasis, state.aliceBit, c.eve);
+    state.bobBit = simulateBobMeasure(c.eve, state.eveBit, c.bob);
+    resetHistogram();
+    const eveRandom = c.eve !== state.aliceBasis;
+    const bobRandom = c.bob !== c.eve;
+    recordHistogram(state.eveBit, state.bobBit, eveRandom, bobRandom);
+    refreshStepUI();
+    goToStep(0);
+  }
+  refreshCaseOutcomes();
+  $("statTrials").textContent = "—"; $("statCorrect").textContent = "—";
+  $("statError").textContent = "—"; $("statRate").textContent = "—";
+}
+
+// ---- Walkthrough steps ----
+// Steps:
+//   0: Alice's photon defined and shown (no animation yet)
+//   1: Animate photon to Eve, project onto Eve's analyzer (deterministic or random)
+//   2: Eve re-emits in her measured basis
+//   3: Animate Eve's photon to Bob, project onto Bob's analyzer
+//   4: Outcome — does Bob match Alice?
+
+const TOTAL_STEPS = 5;
+
+function refreshStepUI() {
+  stepLabel.textContent = `Step ${state.step + 1} / ${TOTAL_STEPS}`;
+  prevBtn.disabled = state.step === 0;
+  nextBtn.disabled = state.step >= TOTAL_STEPS - 1;
+  replayBtn.disabled = state.caseIdx === null;
+}
+
+prevBtn.addEventListener("click", () => goToStep(state.step - 1));
+nextBtn.addEventListener("click", () => goToStep(state.step + 1));
+replayBtn.addEventListener("click", () => {
+  if (state.caseIdx === null) return;
+  // Re-roll the random outcomes for this case and start from step 0
+  const c = CASES[state.caseIdx];
+  state.eveBit = simulateEveMeasure(state.aliceBasis, state.aliceBit, c.eve);
+  state.bobBit = simulateBobMeasure(c.eve, state.eveBit, c.bob);
+  const eveRandom = c.eve !== state.aliceBasis;
+  const bobRandom = c.bob !== c.eve;
+  recordHistogram(state.eveBit, state.bobBit, eveRandom, bobRandom);
+  goToStep(0);
+});
+
+async function goToStep(n) {
+  if (state.caseIdx === null) return;
+  state.step = Math.max(0, Math.min(TOTAL_STEPS - 1, n));
+  refreshStepUI();
+  stopPhotons();
+
+  const c = CASES[state.caseIdx];
+  const aliceBasis = state.aliceBasis, aliceBit = state.aliceBit;
+  const aliceAngle = polAngle(aliceBasis, aliceBit);
+  const aliceColor = colorForBit(aliceBit);
+  const eveRandom = c.eve !== aliceBasis;
+  const bobRandom = c.bob !== c.eve;
+
+  // Always show Alice's HWP and basis badges for Eve/Bob
+  setHWPLine($("aliceHWPaxis"), hwpPhysicalAngle(aliceAngle));
+  setHWPLine($("eveHWPaxis"), bobOrEveHwpPhysical(c.eve));
+  setHWPLine($("bobHWPaxis"), bobOrEveHwpPhysical(c.bob));
+  setBasisBadge($("eveBasisBadge"), $("eveBasisBadgeText"), c.eve);
+  setBasisBadge($("bobBasisBadge"), $("bobBasisBadgeText"), c.bob);
+
+  setTravelArrow($("travelPol1"), $("travelArrow1"), $("travelLabel1"), 270, aliceAngle, aliceColor, aliceBasis, "Alice→");
+  if (state.step >= 2) {
+    const eveAngle = polAngle(c.eve, state.eveBit);
+    setHWPLine($("eveOutHWPaxis"), hwpPhysicalAngle(eveAngle));
+    const eveColor = colorForBit(state.eveBit);
+    setTravelArrow($("travelPol2"), $("travelArrow2"), $("travelLabel2"), 710, eveAngle, eveColor, c.eve, "Eve→");
+  } else {
+    clearTravelArrow($("travelPol2"));
+    setHWPLine($("eveOutHWPaxis"), 0);
+  }
+
+  // Reset detector highlights
+  $("beam_evePbsDet0").setAttribute("opacity", "0");
+  $("beam_evePbsDet1").setAttribute("opacity", "0");
+  $("beam_bobPbsDet0").setAttribute("opacity", "0");
+  $("beam_bobPbsDet1").setAttribute("opacity", "0");
+  hideAllGhosts();
+
+  setNarration();
+
+  const token = ++photonShotToken;
+
+  // ---- Step 1: photon flies to Eve. Random projection (if any) happens AT the PBS. ----
+  if (state.step === 1) {
+    // Path: laser → Alice HWP → Eve HWP → into Eve's PBS center
+    const arrivalPath = [
+      { x: 60, y: 140 },
+      { x: 180, y: 140 },
+      { x: 360, y: 140 },
+      { x: 440, y: 140 },  // Eve PBS center
+    ];
+    await shootPhoton(photonAliceDot, arrivalPath, aliceColor, 1300, token);
+    if (token !== photonShotToken) return;
+
+    const det0Endpoint = { x: 515, y: 140 };
+    const det1Endpoint = { x: 430, y: 75 };
+
+    if (eveRandom) {
+      // The photon arrived at Eve's PBS in Alice's polarization. Eve's PBS forces
+      // it to project onto Eve's basis — random outcome.
+      // Hold the dot at the PBS center, show both possible outputs as ghosts,
+      // jitter the dot between the two paths, then snap to the winner.
+      showGhosts("eve");
+      photonAliceDot.setAttribute("opacity", "1");
+      photonAliceDot.setAttribute("cx", 440);
+      photonAliceDot.setAttribute("cy", 140);
+      await wobbleAtPBS(photonAliceDot, 440, 140, det0Endpoint, det1Endpoint, 900, token);
+      if (token !== photonShotToken) return;
+      hideGhostsExcept("eve", state.eveBit);
+    }
+    // Light up the winning detector path
+    if (state.eveBit === 0) { $("beam_evePbsDet0").setAttribute("opacity", "1"); $("beam_evePbsDet0").setAttribute("stroke", "var(--bit0)"); }
+    else                    { $("beam_evePbsDet1").setAttribute("opacity", "1"); $("beam_evePbsDet1").setAttribute("stroke", "var(--bit1)"); }
+    // Photon completes its journey to the chosen detector
+    const finalPath = [{ x: 440, y: 140 }, state.eveBit === 0 ? det0Endpoint : det1Endpoint];
+    await shootPhoton(photonAliceDot, finalPath, colorForBit(state.eveBit), 500, token);
+  }
+
+  // ---- Steps 2/3 keep the eve detector lit ----
+  if (state.step >= 1) {
+    if (state.eveBit === 0) { $("beam_evePbsDet0").setAttribute("opacity", "1"); $("beam_evePbsDet0").setAttribute("stroke", "var(--bit0)"); }
+    else                    { $("beam_evePbsDet1").setAttribute("opacity", "1"); $("beam_evePbsDet1").setAttribute("stroke", "var(--bit1)"); }
+  }
+
+  // ---- Step 3: re-emitted photon flies to Bob. Random projection (if any) at Bob's PBS. ----
+  if (state.step === 3) {
+    const eveColor = colorForBit(state.eveBit);
+    const arrivalPath = [
+      { x: 550, y: 140 },
+      { x: 620, y: 140 },
+      { x: 800, y: 140 },
+      { x: 900, y: 140 },  // Bob PBS center
+    ];
+    await shootPhoton(photonEveDot, arrivalPath, eveColor, 1300, token);
+    if (token !== photonShotToken) return;
+
+    const det0Endpoint = { x: 975, y: 140 };
+    const det1Endpoint = { x: 890, y: 75 };
+
+    if (bobRandom) {
+      showGhosts("bob");
+      photonEveDot.setAttribute("opacity", "1");
+      photonEveDot.setAttribute("cx", 900);
+      photonEveDot.setAttribute("cy", 140);
+      await wobbleAtPBS(photonEveDot, 900, 140, det0Endpoint, det1Endpoint, 900, token);
+      if (token !== photonShotToken) return;
+      hideGhostsExcept("bob", state.bobBit);
+    }
+    if (state.bobBit === 0) { $("beam_bobPbsDet0").setAttribute("opacity", "1"); $("beam_bobPbsDet0").setAttribute("stroke", "var(--bit0)"); }
+    else                    { $("beam_bobPbsDet1").setAttribute("opacity", "1"); $("beam_bobPbsDet1").setAttribute("stroke", "var(--bit1)"); }
+    const finalPath = [{ x: 900, y: 140 }, state.bobBit === 0 ? det0Endpoint : det1Endpoint];
+    await shootPhoton(photonEveDot, finalPath, colorForBit(state.bobBit), 500, token);
+  }
+
+  // ---- Static detector states for steps 4+ ----
+  if (state.step >= 3) {
+    if (state.bobBit === 0) { $("beam_bobPbsDet0").setAttribute("opacity", "1"); $("beam_bobPbsDet0").setAttribute("stroke", "var(--bit0)"); }
+    else                    { $("beam_bobPbsDet1").setAttribute("opacity", "1"); $("beam_bobPbsDet1").setAttribute("stroke", "var(--bit1)"); }
+  }
+}
+
+function setNarration() {
+  if (state.caseIdx === null) {
+    narration.textContent = "Pick Alice's basis + bit, then pick a case above.";
+    narration.className = "narration";
+    return;
+  }
+  const c = CASES[state.caseIdx];
+  const aB = state.aliceBasis, aBit = state.aliceBit;
+  const eB = c.eve, eBit = state.eveBit;
+  const bB = c.bob, bBit = state.bobBit;
+  const eveSameAsAlice = eB === aB;
+  const bobSameAsAlice = bB === aB;
+  let txt = "", cls = "narration";
+  switch (state.step) {
+    case 0:
+      txt = `Alice prepares a photon: bit <span class="${aBit===0?'bit0':'bit1'}">${aBit}</span> in ${aB==='+'?'<span class="badge-plus">+</span>':'<span class="badge-x">×</span>'} basis → polarization at <strong>${polAngle(aB, aBit)}°</strong>. It travels toward Eve.`;
+      break;
+    case 1:
+      if (eveSameAsAlice) {
+        txt = `Eve guessed the <strong>same basis</strong> as Alice. Her analyzer is aligned with Alice's photon — measurement is <strong>deterministic</strong>: she reads bit <span class="${eBit===0?'bit0':'bit1'}">${eBit}</span>, the correct value.`;
+        cls = "narration same";
+      } else {
+        txt = `Eve guessed the <strong>wrong basis</strong>. Alice's photon is in a superposition relative to Eve's analyzer — the measurement is <strong>random (50/50)</strong>. This time she happens to read bit <span class="${eBit===0?'bit0':'bit1'}">${eBit}</span>. <em>Whichever value she got, the original information has been destroyed.</em>`;
+        cls = "narration random";
+      }
+      break;
+    case 2:
+      txt = `Eve re-emits a photon at the polarization corresponding to her measured bit ${eBit}, in <strong>her</strong> basis (${eB==='+'?'<span class="badge-plus">+</span>':'<span class="badge-x">×</span>'}) → polarization at <strong>${polAngle(eB, eBit)}°</strong>. ${eveSameAsAlice ? "This is identical to what Alice sent." : "<strong>This is no longer Alice's polarization.</strong>"}`;
+      cls = eveSameAsAlice ? "narration same" : "narration random";
+      break;
+    case 3:
+      if (bobSameAsAlice && eveSameAsAlice) {
+        txt = `Bob's basis matches Alice's, and Eve didn't disturb anything → Bob reads bit <span class="${bBit===0?'bit0':'bit1'}">${bBit}</span> deterministically. <strong>Bob = Alice ✓</strong>`;
+        cls = "narration match";
+      } else if (bobSameAsAlice && !eveSameAsAlice) {
+        txt = `Bob's basis matches Alice's, but the photon arriving has been corrupted by Eve. Eve sent a ${eB==='+'?'+':'×'}-basis photon; Bob analyzes in ${bB==='+'?'+':'×'} basis. Result is random (50/50). This time Bob reads bit <span class="${bBit===0?'bit0':'bit1'}">${bBit}</span>.`;
+        cls = "narration random";
+      } else if (!bobSameAsAlice && eveSameAsAlice) {
+        txt = `Bob's basis differs from Alice's, so even without Eve this round would be random and discarded after sifting. Bob reads bit <span class="${bBit===0?'bit0':'bit1'}">${bBit}</span>.`;
+        cls = "narration random";
+      } else {
+        txt = `Bob's basis differs from Alice's. This round will be discarded after sifting regardless. Bob reads bit <span class="${bBit===0?'bit0':'bit1'}">${bBit}</span>.`;
+        cls = "narration random";
+      }
+      break;
+    case 4: {
+      const bobMatches = bBit === aBit;
+      if (!bobSameAsAlice) {
+        txt = `<strong>This round is discarded</strong> — Bob and Alice used different bases. After sifting, only same-basis rounds count. Eve's interference doesn't show up here.`;
+        cls = "narration random";
+      } else if (eveSameAsAlice) {
+        txt = `Bob's bit (<span class="${bBit===0?'bit0':'bit1'}">${bBit}</span>) <strong>matches</strong> Alice's (<span class="${aBit===0?'bit0':'bit1'}">${aBit}</span>). Eve guessed right; her interception left no trace. Eve gets away clean — but only because she got lucky.`;
+        cls = "narration match";
+      } else {
+        if (bobMatches) {
+          txt = `Bob's bit (<span class="${bBit===0?'bit0':'bit1'}">${bBit}</span>) <strong>happens to match</strong> Alice's (<span class="${aBit===0?'bit0':'bit1'}">${aBit}</span>) — but only by chance. Eve disturbed the photon, then Bob's wrong-basis-induced randomness happened to roll in Alice's favor. Across many rounds, half of these wrong-basis-by-Eve rounds will end up disagreeing.`;
+          cls = "narration match";
+        } else {
+          txt = `<strong>Bob's bit (<span class="${bBit===0?'bit0':'bit1'}">${bBit}</span>) disagrees with Alice's (<span class="${aBit===0?'bit0':'bit1'}">${aBit}</span>)</strong> — even though they used the same basis! This is the fingerprint of Eve. With a clean channel, same-basis rounds always agree. Disagreement = eavesdropping.`;
+          cls = "narration mismatch";
+        }
+      }
+      break;
+    }
+  }
+  narration.innerHTML = txt;
+  narration.className = cls;
+}
+
+// ---- Run-many simulation ----
+$("runManyBtn").addEventListener("click", () => {
+  if (state.caseIdx === null) { $("manyHint").textContent = "Pick a case first."; return; }
+  $("manyHint").textContent = "";
+  const c = CASES[state.caseIdx];
+  const N = 1000;
+  let correct = 0, error = 0;
+  for (let i = 0; i < N; i++) {
+    const eBit = simulateEveMeasure(state.aliceBasis, state.aliceBit, c.eve);
+    const bBit = simulateBobMeasure(c.eve, eBit, c.bob);
+    // Only "kept" rounds (Bob basis = Alice basis) count for error rate;
+    // but for clarity here we report Bob = Alice for ALL rounds in this case.
+    if (bBit === state.aliceBit) correct++; else error++;
+  }
+  $("statTrials").textContent = N;
+  $("statCorrect").textContent = correct;
+  $("statError").textContent = error;
+  $("statRate").textContent = `${((error / N) * 100).toFixed(1)}%`;
+});
+
+// ---- Init ----
+buildCaseGrid();
+setAliceBasis("+");
+setAliceBit(0);
+refreshStepUI();
+</script>
+</body>
+</html>
