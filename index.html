@@ -1,53 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Thomay Lab — University at Buffalo</title>
-  <meta name="description" content="Academic homepage for the Thomay Lab (University at Buffalo). Research, publications, teaching, and contact." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css" />
-</head>
-<body>
-<header class="site-header">
-  <div class="container">
-    <div class="brand">
-      <a href="index.html">Thomay Lab</a>
-      <span class="tagline">University at Buffalo</span>
-    </div>
-    <nav class="nav" id="nav">
-      <a href="#about">About</a>
-      <a href="publications.html">Publications</a>
-      <a href="#research">Research</a>
-      <a href="#teaching">Teaching</a>
-      <a href="journal-club.html">Journal Club</a>
-      <a href="#contact">Contact</a>
-      <a href="people.html">People</a>
-      <a href="openings.html">Openings</a>
-      <a href="https://discord.gg/NycYZBWk6j" target="_blank">Discord</a>
-    </nav>
-    <div class="theme-switcher" id="theme-switcher">
-      <button class="theme-switcher-btn" aria-label="Choose your favorite laser" title="Choose your favorite laser">
-        <svg class="laser-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <polygon points="20,4 18,8 22,6" fill="currentColor"/>
-          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        </svg>
-      </button>
-      <div class="theme-dropdown" id="theme-dropdown" style="display:none;">
-        <div class="theme-dropdown-header">Choose your favorite laser</div>
-        <button data-theme="default">Default</button>
-        <button data-theme="green">Green (Nd:YAG)</button>
-        <button data-theme="red">Red (HeNe)</button>
-        <button data-theme="blue">Blue (GaN)</button>
-      </div>
-    </div>
-    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
-  </div>
-</header>
-
+---
+layout: layouts/base.njk
+title: Thomay Lab — University at Buffalo
+description: Academic homepage for the Thomay Lab (University at Buffalo). Research, publications, teaching, and contact.
+permalink: /index.html
+---
 <main>
   <section class="hero">
     <div class="container hero-inner">
@@ -80,8 +36,8 @@
       </p>
 
       <ul class="meta">
-        <li>ORCID: <a href="https://orcid.org/0000-0003-2271-6803" rel="me">0000-0003-2271-6803</a></li>
-        <li>Google Scholar: <a href="https://scholar.google.com/citations?user=2MD7MJ4AAAAJ&hl=en&oi=ao">Tim Thomay</a></li>
+        <li>ORCID: <a href="{{ site.orcid }}" rel="me">0000-0003-2271-6803</a></li>
+        <li>Google Scholar: <a href="{{ site.scholar }}">Tim Thomay</a></li>
         <li>GitHub: <a href="https://github.com/laserlab">laserlab</a></li>
       </ul>
 
@@ -94,38 +50,12 @@
 <div class="card">
   <h3>News</h3>
   <ul class="news-list" id="news-list">
+    {%- for item in news %}
     <li>
-      <time>2025-12-01</time>
-      <strong>Cover feature in <em>Analyst</em> (RSC)</strong> — Our article is featured on the cover of the current issue.
-      See the <a href="https://pubs.rsc.org/en/journals/journalissues/an#!issueid=an150024&type=current&issnprint=0003-2654" target="_blank" rel="noopener">issue page</a>.
+      <time>{{ item.date }}</time>
+      {{ item.html | safe }}
     </li>
-
-    <li>
-      <time>2025-10-07</time>
-      <strong>New article accepted in <em>Analyst</em> (RSC)</strong> — 
-      <em>“Cooperative emission in spin-injected electrically contacted quantum dots.”</em>  
-      First published online on 7 October 2025.  
-      Read the paper: <a href="https://pubs.rsc.org/en/content/articlehtml/2025/AN/D5AN00326A" target="_blank" rel="noopener">RSC Analyst (2025)</a>.
-    </li>
-
-    <li>
-      <time>2025-10-10</time>
-      <strong>New publication in J. Optics</strong> — Spectrally resolved higher-order photon statistics
-      from SPDC. See <a href="https://doi.org/10.1088/2040-8986/ad971d" target="_blank" rel="noopener">J. Optics</a>.
-    </li>
-    <li>
-      <time>2025-09-22</time>
-      <strong>Preprint released:</strong> Quantum fingerprints for plant productivity on
-      <a href="https://arxiv.org/abs/2502.21275" target="_blank" rel="noopener">arXiv</a>.
-    </li>
-    <li>
-      <time>2025-06-30</time>
-      <strong>Congratulations to Umadini Ranasinghe</strong> for completing her M.S. in Physics!
-    </li>
-    <li>
-      <time>2025-05-01</time>
-      <strong>Website redesign</strong> launched with automatic ORCID-based publication updates and Discord integration.
-    </li>
+    {%- endfor %}
   </ul>
 </div>
 
@@ -196,7 +126,7 @@
 
     <p class="muted" style="margin-top:1.5rem;">
       For a full list of publications, visit
-      <a href="https://orcid.org/0000-0003-2271-6803" target="_blank" rel="noopener">Dr. Thomay’s ORCID profile</a>.
+      <a href="{{ site.orcid }}" target="_blank" rel="noopener">Dr. Thomay’s ORCID profile</a>.
     </p>
   </div>
 </section>
@@ -242,28 +172,7 @@
   <section id="pubs-preview" class="section">
     <div class="container">
       <h2>Selected Publications</h2>
-      <ul class="pubs-list">
-        <li>
-          <div class="title"><a href="https://doi.org/10.1039/D5AN00326A" target="_blank" rel="noopener">Utilizing quantum fingerprints in plant cells to evaluate plant productivity</a></div>
-          <div class="meta"><span>2025</span><span>journal article</span></div>
-        </li>
-        <li>
-          <div class="title"><a href="https://doi.org/10.1088/2040-8986/adfdfa" target="_blank" rel="noopener">Spectrally-resolved higher-order photon statistics of spontaneous parametric down-conversion</a></div>
-          <div class="meta"><span>2025</span><span>journal article</span></div>
-        </li>
-        <li>
-          <div class="title"><a href="https://doi.org/10.1103/PhysRevA.111.012217" target="_blank" rel="noopener">Statistical model for quantum spin and photon number states</a></div>
-          <div class="meta"><span>2025</span><span>journal article</span></div>
-        </li>
-        <li>
-          <div class="title"><a href="https://doi.org/10.1063/5.0215915" target="_blank" rel="noopener">Optimized higher-order photon state classification by machine learning</a></div>
-          <div class="meta"><span>2024</span><span>journal article</span></div>
-        </li>
-        <li>
-          <div class="title"><a href="https://opg.optica.org/ome/fulltext.cfm?uri=ome-11-6-1603&id=452707" target="_blank" rel="noopener">Intracavity second harmonic generation from a WSe₂ monolayer in a passively mode-locked picosecond fiber laser</a></div>
-          <div class="meta"><span>2021</span><span>journal article</span></div>
-        </li>
-      </ul>
+      {% include "pubs-featured.njk" %}
       <p><a class="button button-inline" href="publications.html">See all publications →</a></p>
     </div>
   </section>
@@ -275,7 +184,7 @@
         <p>Department, University at Buffalo<br/>Buffalo, NY, USA</p>
         <p>Email: <span>thomay [at] buffalo [dot] edu</span></p>
         <p>
-          <a class="button button-secondary" href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">
+          <a class="button button-secondary" href="{{ site.discord }}" target="_blank" rel="noopener">
             💬 Join the Thomay Lab Discord
           </a>
         </p>
@@ -283,78 +192,10 @@
       <div class="card">
         <h3>Links</h3>
         <ul class="meta">
-          <li>ORCID: <a href="https://orcid.org/0000-0003-2271-6803" rel="me">Tim Thomay</a></li>
+          <li>ORCID: <a href="{{ site.orcid }}" rel="me">Tim Thomay</a></li>
           <li><a href="publications.html#orcid-sync">How the publications list works</a></li>
         </ul>
       </div>
     </div>
   </section>
 </main>
-
-<footer class="site-footer">
-  <div class="container">
-    <p>© <span id="year"></span> Thomay Lab — Content rights reserved. Code MIT-licensed.</p>
-  </div>
-  <div class="container"><p class="muted">Also on <a href="https://discord.gg/NycYZBWk6j" target="_blank" rel="noopener">Discord</a></p></div>
-</footer>
-
-<script>
-// Year footer
-document.getElementById('year').textContent = new Date().getFullYear();
-
-// Theme switcher
-(function() {
-  const STORAGE_KEY = 'thomay-lab-theme';
-  const themeSwitcher = document.getElementById('theme-switcher');
-  const themeBtn = themeSwitcher.querySelector('.theme-switcher-btn');
-  const themeDropdown = document.getElementById('theme-dropdown');
-  const themeOptions = themeDropdown.querySelectorAll('button');
-
-  // Load saved theme or default
-  function initTheme() {
-    const saved = localStorage.getItem(STORAGE_KEY) || 'default';
-    setTheme(saved);
-  }
-
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(STORAGE_KEY, theme);
-
-    // Update active state in dropdown
-    themeOptions.forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.getAttribute('data-theme') === theme) {
-        btn.classList.add('active');
-      }
-    });
-  }
-
-  // Toggle dropdown
-  themeBtn.addEventListener('click', () => {
-    const isOpen = themeDropdown.style.display !== 'none';
-    themeDropdown.style.display = isOpen ? 'none' : 'block';
-  });
-
-  // Theme selection
-  themeOptions.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const theme = btn.getAttribute('data-theme');
-      setTheme(theme);
-      themeDropdown.style.display = 'none';
-    });
-  });
-
-  // Close dropdown on outside click
-  document.addEventListener('click', (e) => {
-    if (!themeSwitcher.contains(e.target)) {
-      themeDropdown.style.display = 'none';
-    }
-  });
-
-  // Init on load
-  initTheme();
-})();
-</script>
-</body>
-</html>
