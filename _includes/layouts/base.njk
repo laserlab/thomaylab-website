@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title }}</title>
+  {%- if description %}
+  <meta name="description" content="{{ description }}" />
+  {%- endif %}
+  {%- if robots %}
+  <meta name="robots" content="{{ robots }}" />
+  {%- endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/style.css" />
+  {%- if head_include %}
+  {% include head_include %}
+  {%- endif %}
+</head>
+<body>
+{% if show_header != false %}{% include "header.njk" %}{% endif %}
+{{ content | safe }}
+{% include "footer.njk" %}
+<script src="/assets/site.js"></script>
+{%- for src in extra_js %}
+<script src="{{ src }}"></script>
+{%- endfor %}
+</body>
+</html>

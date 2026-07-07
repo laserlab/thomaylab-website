@@ -1,0 +1,14 @@
+{
+  "name": "thomaylab-website",
+  "version": "1.0.0",
+  "description": "Thomay Lab website (qislab.org), built with Eleventy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.0"
+  }
+}

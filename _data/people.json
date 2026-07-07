@@ -1,0 +1,71 @@
+{
+  "sections": [
+    {
+      "heading": "PhD Students",
+      "people": [
+        {
+          "name": "Yasmin Sarhan",
+          "role": "PhD student, Physics (UB)",
+          "links": [
+            { "label": "ResearchGate", "url": "https://www.researchgate.net/profile/Yasmin-Sarhan" },
+            { "label": "LinkedIn", "url": "https://www.linkedin.com/in/yasmin-sarhan-27324a118" }
+          ]
+        },
+        {
+          "name": "Chiran Yasas Wijesundara Mudiyans",
+          "role": "PhD student, Physics (UB)",
+          "links": [
+            { "label": "LinkedIn", "url": "https://www.linkedin.com/in/chiran-wijesundara-026b86337" },
+            { "label": "UB Directory", "url": "https://arts-sciences.buffalo.edu/physics/faculty/graduate-student-directory.html" }
+          ]
+        },
+        {
+          "name": "Jeffrey Carvalho",
+          "role": "PhD, Physics (2025)",
+          "links": [
+            { "label": "ResearchGate", "url": "https://www.researchgate.net/scientific-contributions/Jeffrey-Carvalho-2235650521" }
+          ]
+        },
+        {
+          "name": "Guangpeng Xu",
+          "role": "PhD, Physics (2025)",
+          "links": [
+            { "label": "LinkedIn", "url": "https://www.linkedin.com/in/guangpengxu" },
+            { "label": "Scholar", "url": "https://scholar.google.com/citations?hl=en&user=k1T67GwAAAAJ" },
+            { "label": "ResearchGate", "url": "https://www.researchgate.net/profile/Guangpeng-Xu-3" }
+          ]
+        },
+        {
+          "name": "Muhammed Kilinc",
+          "role": "PhD, Physics (2021)",
+          "links": [
+            { "label": "Scholar", "url": "https://scholar.google.com/citations?hl=en&user=oUK3BQ0AAAAJ" },
+            { "label": "LinkedIn", "url": "https://www.linkedin.com/in/mhkilinc" },
+            { "label": "ResearchGate", "url": "https://www.researchgate.net/profile/Muhammed-Kilinc" }
+          ]
+        },
+        {
+          "name": "Steven Tarasek",
+          "role": "PhD, Physics (2020)",
+          "links": [
+            { "label": "ResearchGate", "url": "https://www.researchgate.net/profile/Steven-Tarasek" },
+            { "label": "ScholarGPS", "url": "https://scholargps.com/scholars/76878850767388/steven-tarasek" }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Master’s Students",
+      "people": [
+        {
+          "name": "Umadini Ranasinghe",
+          "role": "M.S. Physics (2025)",
+          "links": [
+            { "label": "ResearchGate", "url": "https://www.researchgate.net/profile/Umadini-Ranasinghe" },
+            { "label": "LinkedIn", "url": "https://www.linkedin.com/in/umadini-damsara-ranasinghe-161551166" }
+          ]
+        }
+      ]
+    }
+  ]
+}

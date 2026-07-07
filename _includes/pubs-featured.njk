@@ -1,0 +1,8 @@
+<ul class="pubs-list">
+  {%- for pub in featured_pubs %}
+  <li>
+    <div class="title"><a href="{{ pub.url }}" target="_blank" rel="noopener">{{ pub.title }}</a></div>
+    <div class="meta"><span>{{ pub.year }}</span><span>{{ pub.type }}</span></div>
+  </li>
+  {%- endfor %}
+</ul>
